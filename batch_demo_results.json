@@ -1,0 +1,798 @@
+[
+  {
+    "call_id": "batch_demo_000",
+    "customer_id": "customer_000",
+    "sales_id": "sales_000",
+    "call_time": "2025-09-02T19:33:06.553802",
+    "icebreak": {
+      "professional_identity": {
+        "hit": true,
+        "evidence": "您好，我是益盟专员。客户：你好。我们提供股票分析服务。客户：好的，了解一下。",
+        "confidence": 0.7500000000000001
+      },
+      "value_help": {
+        "hit": false,
+        "evidence": "N/A",
+        "confidence": 0.0
+      },
+      "time_notice": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "company_background": {
+        "hit": false,
+        "evidence": "",
+        "confidence": 0.0
+      },
+      "free_teach": {
+        "hit": false,
+        "evidence": "N/A",
+        "confidence": 0.0
+      },
+      "refuse_reason": "",
+      "refuse_recover_count": 0,
+      "next_appointment": false
+    },
+    "演绎": {
+      "bs_explained": {
+        "hit": false,
+        "evidence": "N/A",
+        "confidence": 0.0
+      },
+      "period_resonance_explained": {
+        "hit": false,
+        "evidence": "N/A",
+        "confidence": 0.0
+      },
+      "control_funds_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "bubugao_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "value_quantify_explained": {
+        "hit": false,
+        "evidence": "",
+        "confidence": 0.0
+      },
+      "customer_stock_explained": {
+        "hit": false,
+        "evidence": "",
+        "confidence": 0.0
+      }
+    },
+    "process": {
+      "explain_duration_min": 0.5,
+      "interaction_rounds_per_min": 0.0,
+      "deal_or_visit": false,
+      "total_words": 38,
+      "sales_words": 38,
+      "customer_words": 0
+    },
+    "customer": {
+      "summary": "无客户对话内容",
+      "questions": [],
+      "value_recognition": "不明",
+      "attitude_score": 0.0
+    },
+    "actions": {
+      "professional_identity": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "您好，我是益盟专员。客户：你好。我们提供股票分析服务。客户：好的，了解一下。"
+        ]
+      },
+      "value_help": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "time_notice": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "company_background": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": []
+      },
+      "free_teach": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "bs_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "period_resonance_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "control_funds_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "bubugao_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "value_quantify_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": []
+      },
+      "customer_stock_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": []
+      }
+    },
+    "analysis_timestamp": "2025-09-02T19:33:06.553806",
+    "analysis_model_version": "1.0.0",
+    "confidence_score": 0.3409090909090909
+  },
+  {
+    "call_id": "batch_demo_001",
+    "customer_id": "customer_001",
+    "sales_id": "sales_001",
+    "call_time": "2025-09-02T19:33:47.292068",
+    "icebreak": {
+      "professional_identity": {
+        "hit": true,
+        "evidence": "您好，我是益盟专员。客户：你好。我们提供股票分析服务。客户：不需要，谢谢。",
+        "confidence": 0.7500000000000001
+      },
+      "value_help": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "time_notice": {
+        "hit": false,
+        "evidence": "",
+        "confidence": 0.0
+      },
+      "company_background": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "free_teach": {
+        "hit": false,
+        "evidence": "",
+        "confidence": 0.0
+      },
+      "refuse_reason": "",
+      "refuse_recover_count": 0,
+      "next_appointment": false
+    },
+    "演绎": {
+      "bs_explained": {
+        "hit": false,
+        "evidence": "",
+        "confidence": 0.0
+      },
+      "period_resonance_explained": {
+        "hit": false,
+        "evidence": "",
+        "confidence": 0.0
+      },
+      "control_funds_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "bubugao_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "value_quantify_explained": {
+        "hit": false,
+        "evidence": "",
+        "confidence": 0.0
+      },
+      "customer_stock_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      }
+    },
+    "process": {
+      "explain_duration_min": 0.5,
+      "interaction_rounds_per_min": 0.0,
+      "deal_or_visit": false,
+      "total_words": 37,
+      "sales_words": 37,
+      "customer_words": 0
+    },
+    "customer": {
+      "summary": "无客户对话内容",
+      "questions": [],
+      "value_recognition": "不明",
+      "attitude_score": 0.0
+    },
+    "actions": {
+      "professional_identity": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "您好，我是益盟专员。客户：你好。我们提供股票分析服务。客户：不需要，谢谢。"
+        ]
+      },
+      "value_help": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "time_notice": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": []
+      },
+      "company_background": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "free_teach": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": []
+      },
+      "bs_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": []
+      },
+      "period_resonance_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": []
+      },
+      "control_funds_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "bubugao_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "value_quantify_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": []
+      },
+      "customer_stock_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      }
+    },
+    "analysis_timestamp": "2025-09-02T19:33:47.292071",
+    "analysis_model_version": "1.0.0",
+    "confidence_score": 0.5227272727272727
+  },
+  {
+    "call_id": "batch_demo_002",
+    "customer_id": "customer_002",
+    "sales_id": "sales_002",
+    "call_time": "2025-09-02T19:34:00.814705",
+    "icebreak": {
+      "professional_identity": {
+        "hit": true,
+        "evidence": "您好，我是益盟专员。客户：你好。我们提供股票分析服务。客户：好的，了解一下。",
+        "confidence": 0.8357142857142857
+      },
+      "value_help": {
+        "hit": false,
+        "evidence": "N/A",
+        "confidence": 0.0
+      },
+      "time_notice": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 0.95
+      },
+      "company_background": {
+        "hit": false,
+        "evidence": "N/A",
+        "confidence": 0.0
+      },
+      "free_teach": {
+        "hit": true,
+        "evidence": "无（判定为否，无需提供）",
+        "confidence": 0.95
+      },
+      "refuse_reason": "",
+      "refuse_recover_count": 0,
+      "next_appointment": false
+    },
+    "演绎": {
+      "bs_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "period_resonance_explained": {
+        "hit": false,
+        "evidence": "无",
+        "confidence": 0.0
+      },
+      "control_funds_explained": {
+        "hit": false,
+        "evidence": "N/A",
+        "confidence": 0.0
+      },
+      "bubugao_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "value_quantify_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "customer_stock_explained": {
+        "hit": true,
+        "evidence": "",
+        "confidence": 1.0
+      }
+    },
+    "process": {
+      "explain_duration_min": 0.5,
+      "interaction_rounds_per_min": 0.0,
+      "deal_or_visit": false,
+      "total_words": 38,
+      "sales_words": 38,
+      "customer_words": 0
+    },
+    "customer": {
+      "summary": "无客户对话内容",
+      "questions": [],
+      "value_recognition": "不明",
+      "attitude_score": 0.0
+    },
+    "actions": {
+      "professional_identity": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "您好，我是益盟专员。客户：你好。我们提供股票分析服务。客户：好的，了解一下。"
+        ]
+      },
+      "value_help": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "time_notice": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "company_background": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "free_teach": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "无（判定为否，无需提供）"
+        ]
+      },
+      "bs_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "period_resonance_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": [
+          "无"
+        ]
+      },
+      "control_funds_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "bubugao_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "value_quantify_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "customer_stock_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": []
+      }
+    },
+    "analysis_timestamp": "2025-09-02T19:34:00.814708",
+    "analysis_model_version": "1.0.0",
+    "confidence_score": 0.6123376623376623
+  },
+  {
+    "call_id": "batch_demo_003",
+    "customer_id": "customer_003",
+    "sales_id": "sales_003",
+    "call_time": "2025-09-02T19:35:48.786006",
+    "icebreak": {
+      "professional_identity": {
+        "hit": true,
+        "evidence": "您好，我是益盟专员。客户：你好。我们提供股票分析服务。客户：不需要，谢谢。",
+        "confidence": 0.7500000000000001
+      },
+      "value_help": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 0.95
+      },
+      "time_notice": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "company_background": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 0.99
+      },
+      "free_teach": {
+        "hit": true,
+        "evidence": "不适用",
+        "confidence": 0.95
+      },
+      "refuse_reason": "",
+      "refuse_recover_count": 0,
+      "next_appointment": false
+    },
+    "演绎": {
+      "bs_explained": {
+        "hit": false,
+        "evidence": "",
+        "confidence": 0.0
+      },
+      "period_resonance_explained": {
+        "hit": false,
+        "evidence": "N/A",
+        "confidence": 0.0
+      },
+      "control_funds_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "bubugao_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "value_quantify_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "customer_stock_explained": {
+        "hit": false,
+        "evidence": "无",
+        "confidence": 0.0
+      }
+    },
+    "process": {
+      "explain_duration_min": 0.5,
+      "interaction_rounds_per_min": 0.0,
+      "deal_or_visit": false,
+      "total_words": 37,
+      "sales_words": 37,
+      "customer_words": 0
+    },
+    "customer": {
+      "summary": "无客户对话内容",
+      "questions": [],
+      "value_recognition": "不明",
+      "attitude_score": 0.0
+    },
+    "actions": {
+      "professional_identity": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "您好，我是益盟专员。客户：你好。我们提供股票分析服务。客户：不需要，谢谢。"
+        ]
+      },
+      "value_help": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "time_notice": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "company_background": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "free_teach": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "不适用"
+        ]
+      },
+      "bs_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": []
+      },
+      "period_resonance_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "control_funds_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "bubugao_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "value_quantify_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "customer_stock_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": [
+          "无"
+        ]
+      }
+    },
+    "analysis_timestamp": "2025-09-02T19:35:48.786010",
+    "analysis_model_version": "1.0.0",
+    "confidence_score": 0.6945454545454546
+  },
+  {
+    "call_id": "batch_demo_004",
+    "customer_id": "customer_004",
+    "sales_id": "sales_004",
+    "call_time": "2025-09-02T19:36:01.965575",
+    "icebreak": {
+      "professional_identity": {
+        "hit": true,
+        "evidence": "您好，我是益盟专员。客户：你好。我们提供股票分析服务。客户：好的，了解一下。",
+        "confidence": 0.8142857142857144
+      },
+      "value_help": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "time_notice": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "company_background": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "free_teach": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      },
+      "refuse_reason": "",
+      "refuse_recover_count": 0,
+      "next_appointment": false
+    },
+    "演绎": {
+      "bs_explained": {
+        "hit": false,
+        "evidence": "",
+        "confidence": 0.0
+      },
+      "period_resonance_explained": {
+        "hit": false,
+        "evidence": "N/A",
+        "confidence": 0.0
+      },
+      "control_funds_explained": {
+        "hit": true,
+        "evidence": "N/A（判定为否，无需提供证据）",
+        "confidence": 0.95
+      },
+      "bubugao_explained": {
+        "hit": false,
+        "evidence": "",
+        "confidence": 0.0
+      },
+      "value_quantify_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 0.95
+      },
+      "customer_stock_explained": {
+        "hit": true,
+        "evidence": "N/A",
+        "confidence": 1.0
+      }
+    },
+    "process": {
+      "explain_duration_min": 0.5,
+      "interaction_rounds_per_min": 0.0,
+      "deal_or_visit": false,
+      "total_words": 38,
+      "sales_words": 38,
+      "customer_words": 0
+    },
+    "customer": {
+      "summary": "无客户对话内容",
+      "questions": [],
+      "value_recognition": "不明",
+      "attitude_score": 0.0
+    },
+    "actions": {
+      "professional_identity": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "您好，我是益盟专员。客户：你好。我们提供股票分析服务。客户：好的，了解一下。"
+        ]
+      },
+      "value_help": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "time_notice": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "company_background": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "free_teach": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "bs_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": []
+      },
+      "period_resonance_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "control_funds_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A（判定为否，无需提供证据）"
+        ]
+      },
+      "bubugao_explained": {
+        "executed": false,
+        "count": 0,
+        "evidence_list": []
+      },
+      "value_quantify_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      },
+      "customer_stock_explained": {
+        "executed": true,
+        "count": 0,
+        "evidence_list": [
+          "N/A"
+        ]
+      }
+    },
+    "analysis_timestamp": "2025-09-02T19:36:01.965579",
+    "analysis_model_version": "1.0.0",
+    "confidence_score": 0.7012987012987014
+  }
+]

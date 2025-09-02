@@ -1,0 +1,162 @@
+{
+  "call_id": "test_no_llm_001",
+  "customer_id": "test_customer",
+  "sales_id": "test_sales",
+  "call_time": "2025-09-01T13:16:40.939374",
+  "icebreak": {
+    "professional_identity": {
+      "hit": true,
+      "evidence": "：你好。 是这样的，我们是腾讯投资的上市公司，专门为股民提供专业的股票分析服务。耽误您两分钟时间，我给您免费讲解一下我们的买卖点功能。",
+      "confidence": 0.85
+    },
+    "value_help": {
+      "hit": false,
+      "evidence": "专业的股票分析服务。耽误您两分钟时间，我给您免费讲解一下我们的买卖点功能。 客户：好",
+      "confidence": 0.2727272727272727
+    },
+    "time_notice": {
+      "hit": true,
+      "evidence": "我们是腾讯投资的上市公司，专门为股民提供专业的股票分析服务。耽误您两分钟时间，我给您免费讲解一下我们的买卖点功能。 客户：好的，你说。",
+      "confidence": 0.7999999999999999
+    },
+    "company_background": {
+      "hit": true,
+      "evidence": "的专员小王，很高兴为您服务。 客户：你好。 是这样的，我们是腾讯投资的上市公司，专门为股民提供专业的股票分析服务。耽误您两分钟时间，我给您",
+      "confidence": 0.8125
+    },
+    "free_teach": {
+      "hit": true,
+      "evidence": "，专门为股民提供专业的股票分析服务。耽误您两分钟时间，我给您免费讲解一下我们的买卖点功能。 客户：好的，你说。 咱们的核心功能是",
+      "confidence": 0.7999999999999999
+    },
+    "refuse_reason": "",
+    "refuse_recover_count": 0,
+    "next_appointment": false
+  },
+  "演绎": {
+    "bs_explained": {
+      "hit": true,
+      "evidence": "下我们的买卖点功能。 客户：好的，你说。 咱们的核心功能是BS点提示，B点代表最佳买入时机，S点代表卖出信号。另外我们还有主力控盘资金指标，可以看到大资金的进出动向。",
+      "confidence": 0.9249999999999999
+    },
+    "period_resonance_explained": {
+      "hit": false,
+      "evidence": "",
+      "confidence": 0.0
+    },
+    "control_funds_explained": {
+      "hit": true,
+      "evidence": "，S点代表卖出信号。另外我们还有主力控盘资金指标，可以看到大资金的进出动向。 客户：听起来不错，有实际效果吗？ 根据历史回测数据，使用",
+      "confidence": 0.85
+    },
+    "bubugao_explained": {
+      "hit": true,
+      "evidence": "有招商银行。 好的，我们来看看招商银行的买卖点情况。我们还有步步高VIP专属功能，能提供更精准的信号。 客户：这个功能是收费的吗？ 我们有不同的服务套餐，您可以",
+      "confidence": 0.8285714285714285
+    },
+    "value_quantify_explained": {
+      "hit": true,
+      "evidence": "到大资金的进出动向。 客户：听起来不错，有实际效果吗？ 根据历史回测数据，使用我们信号的客户平均能提升20%的收益率。咱们看看您现在",
+      "confidence": 0.6016666666666666
+    },
+    "customer_stock_explained": {
+      "hit": false,
+      "evidence": "我们信号的客户平均能提升20%的收益率。咱们看看您现在持有什么股票，我给您具体分析一下。",
+      "confidence": 0.37500000000000006
+    }
+  },
+  "process": {
+    "explain_duration_min": 0.5,
+    "interaction_rounds_per_min": 0.0,
+    "deal_or_visit": true,
+    "total_words": 338,
+    "sales_words": 338,
+    "customer_words": 0
+  },
+  "customer": {
+    "summary": "无客户对话内容",
+    "questions": [],
+    "value_recognition": "不明",
+    "attitude_score": 0.0
+  },
+  "actions": {
+    "professional_identity": {
+      "executed": true,
+      "count": 0,
+      "evidence_list": [
+        "：你好。 是这样的，我们是腾讯投资的上市公司，专门为股民提供专业的股票分析服务。耽误您两分钟时间，我给您免费讲解一下我们的买卖点功能。"
+      ]
+    },
+    "value_help": {
+      "executed": false,
+      "count": 0,
+      "evidence_list": [
+        "专业的股票分析服务。耽误您两分钟时间，我给您免费讲解一下我们的买卖点功能。 客户：好"
+      ]
+    },
+    "time_notice": {
+      "executed": true,
+      "count": 0,
+      "evidence_list": [
+        "我们是腾讯投资的上市公司，专门为股民提供专业的股票分析服务。耽误您两分钟时间，我给您免费讲解一下我们的买卖点功能。 客户：好的，你说。"
+      ]
+    },
+    "company_background": {
+      "executed": true,
+      "count": 0,
+      "evidence_list": [
+        "的专员小王，很高兴为您服务。 客户：你好。 是这样的，我们是腾讯投资的上市公司，专门为股民提供专业的股票分析服务。耽误您两分钟时间，我给您"
+      ]
+    },
+    "free_teach": {
+      "executed": true,
+      "count": 0,
+      "evidence_list": [
+        "，专门为股民提供专业的股票分析服务。耽误您两分钟时间，我给您免费讲解一下我们的买卖点功能。 客户：好的，你说。 咱们的核心功能是"
+      ]
+    },
+    "bs_explained": {
+      "executed": true,
+      "count": 0,
+      "evidence_list": [
+        "下我们的买卖点功能。 客户：好的，你说。 咱们的核心功能是BS点提示，B点代表最佳买入时机，S点代表卖出信号。另外我们还有主力控盘资金指标，可以看到大资金的进出动向。"
+      ]
+    },
+    "period_resonance_explained": {
+      "executed": false,
+      "count": 0,
+      "evidence_list": []
+    },
+    "control_funds_explained": {
+      "executed": true,
+      "count": 0,
+      "evidence_list": [
+        "，S点代表卖出信号。另外我们还有主力控盘资金指标，可以看到大资金的进出动向。 客户：听起来不错，有实际效果吗？ 根据历史回测数据，使用"
+      ]
+    },
+    "bubugao_explained": {
+      "executed": true,
+      "count": 0,
+      "evidence_list": [
+        "有招商银行。 好的，我们来看看招商银行的买卖点情况。我们还有步步高VIP专属功能，能提供更精准的信号。 客户：这个功能是收费的吗？ 我们有不同的服务套餐，您可以"
+      ]
+    },
+    "value_quantify_explained": {
+      "executed": true,
+      "count": 0,
+      "evidence_list": [
+        "到大资金的进出动向。 客户：听起来不错，有实际效果吗？ 根据历史回测数据，使用我们信号的客户平均能提升20%的收益率。咱们看看您现在"
+      ]
+    },
+    "customer_stock_explained": {
+      "executed": false,
+      "count": 0,
+      "evidence_list": [
+        "我们信号的客户平均能提升20%的收益率。咱们看看您现在持有什么股票，我给您具体分析一下。"
+      ]
+    }
+  },
+  "analysis_timestamp": "2025-09-01T13:16:48.593582",
+  "analysis_model_version": "1.0.0",
+  "confidence_score": 0.6468604879968516
+}
