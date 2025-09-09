@@ -1,0 +1,61 @@
+{
+    "version": "2.0.0",
+    "inputs": [
+    {
+    "id": "question",
+    "type": "promptString",
+    "description": "What do you want Gemini to analyze?",
+    "default": "Summarize the architecture of this codebase"
+    },
+    {
+    "id": "paths",
+    "type": "promptString",
+    "description": "Space-separated @paths (e.g. @src/ @tests/ or @./ )",
+    "default": "@./"
+    }
+    ],
+    "tasks": [
+    {
+    "label": "Gemini: Analyze (paths + question)",
+    "type": "shell",
+    "command": "gemini -p \"${input:paths} ${input:question}\"",
+    "problemMatcher": []
+    },
+    {
+    "label": "Gemini: Analyze current workspace (overview)",
+    "type": "shell",
+    "command": "gemini -p \"@./ Give me an overview of this entire project\"",
+    "problemMatcher": []
+    },
+    {
+    "label": "Gemini: All files → structure & deps",
+    "type": "shell",
+    "command": "gemini --all_files -p \"Analyze the project structure and dependencies\"",
+    "problemMatcher": []
+    },
+    {
+    "label": "Gemini Verify: JWT",
+    "type": "shell",
+    "command": "gemini -p \"@src/ @middleware/ Is JWT authentication implemented? List all auth-related endpoints and middleware\"",
+    "problemMatcher": []
+    },
+    {
+    "label": "Gemini Verify: SQL injection protection",
+    "type": "shell",
+    "command": "gemini -p \"@src/ @api/ Are SQL injection protections implemented? Show how user inputs are sanitized\"",
+    "problemMatcher": []
+    },
+    {
+    "label": "Gemini Verify: Redis caching",
+    "type": "shell",
+    "command": "gemini -p \"@src/ @lib/ @services/ Is Redis caching implemented? List all cache-related functions and their usage\"",
+    "problemMatcher": []
+    },
+    {
+    "label": "Gemini Verify: Rate limiting",
+    "type": "shell",
+    "command": "gemini -p \"@backend/ @middleware/ Is rate limiting implemented for the API? Show the implementation details\"",
+    "problemMatcher": []
+    }
+  ]
+}

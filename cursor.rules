@@ -1,0 +1,35 @@
+# rule: prefer-gemini-for-large-codebase
+When the user asks to analyze large codebases, multiple files, or project-wide patterns, prefer Google Gemini CLI with its large context window.
+
+
+## Triggers
+- Mentions like: “analyze entire codebase”, “cross-file”, “project-wide”, “too big for context”, “>100KB”
+- Directory-level tasks: audit architecture, verify features (JWT, rate limiting, SQL injection), scan patterns (Redis, WebSocket hooks), test coverage
+
+
+## How to act
+- Propose one of the following commands (choose the closest):
+- Single file: `gemini -p "@<path/file> Explain this file's purpose and structure"`
+- Multi file: `gemini -p "@package.json @src/index.js Analyze the dependencies used in the code"`
+- Whole dir: `gemini -p "@src/ Summarize the architecture of this codebase"`
+- Multi dir: `gemini -p "@src/ @tests/ Analyze test coverage for the source code"`
+- Whole project: `gemini -p "@./ Give me an overview of this entire project"`
+- All files: `gemini --all_files -p "Analyze the project structure and dependencies"`
+
+
+## Implementation verification examples
+- Dark mode: `gemini -p "@src/ @lib/ Has dark mode been implemented in this codebase? Show relevant files/functions"`
+- JWT auth: `gemini -p "@src/ @middleware/ Is JWT authentication implemented? List auth endpoints/middleware"`
+- React WS hooks: `gemini -p "@src/ Are there any React hooks that handle WebSocket connections? List with file paths"`
+- Error handling: `gemini -p "@src/ @api/ Is proper error handling implemented? Show try-catch examples"`
+- Rate limiting: `gemini -p "@backend/ @middleware/ Is rate limiting implemented? Show details"`
+- Redis caching: `gemini -p "@src/ @lib/ @services/ Is Redis caching implemented? List cache functions/usages"`
+- SQL injection: `gemini -p "@src/ @api/ Are SQL injection protections implemented? How are inputs sanitized?"`
+- Payment tests: `gemini -p "@src/payment/ @tests/ Is the payment processing module fully tested? List test cases"`
+
+
+## Notes
+- `@path` is relative to the shell working directory
+- `--all_files` includes everything; `--yolo` not required for read-only analysis
+- Prefer Gemini CLI if Claude context likely overflows
+- Be specific in verification prompts
