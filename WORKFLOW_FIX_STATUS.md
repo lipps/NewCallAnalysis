@@ -93,3 +93,39 @@
 - 在磁盘空间足够时支持向量增强
 
 **系统已准备就绪投入使用！** 🎉
+
+---
+
+## 2025-09-09 增强与稳定性改进
+
+为解决 Dashboard 端“请求超时”与后端 LLM 调用偶发超时的问题，做了两处小幅、可回滚的优化。
+
+### 变更内容
+- Dashboard 请求超时提高：
+  - 文件：`src/dashboard/streamlit_app.py`
+  - 将调用 `/analyze` 的 `requests.post(..., timeout=280)`（此前为 180 秒）
+  - 目的：在开启 LLM 验证或网络较慢时，避免前端过早超时
+
+- LLM 引擎稳态优化：
+  - 文件：`src/engines/llm_engine.py`
+  - 并发限制：`asyncio.Semaphore(2)`（降低拥塞概率）
+  - 单请求超时：`asyncio.wait_for(..., timeout=100.0)`
+  - 新增重试：对 `TimeoutError`/瞬时错误进行最多 3 次指数退避重试
+
+### 预期影响
+- 在网络波动或模型响应偏慢时，分析更不易超时；日志中 `TimeoutError` 明显减少。
+- 公共 API 不变；对结果质量无负面影响，仅提升鲁棒性与成功率。
+
+### 验证步骤
+1. 重启服务：`python run_server.py`
+2. 在 Dashboard 勾选“启用 LLM 验证”，提交一次较长的通话文本。
+3. 观察：
+   - 前端不再出现“请求超时”红条（280 秒内可返回）。
+   - `/statistics` 中 `llm_engine.error_count` 增长变慢；日志不再连续刷 `TimeoutError`。
+
+### 回滚/调参
+- 若需更严格的超时策略：
+  - 将 `streamlit_app.py` 中超时改回 120–180 秒。
+  - 将 `llm_engine.py` 的并发/超时/重试参数按需调小。
+
+> 注：若无有效 `OPENAI_API_KEY` 或网络受限，仍建议在配置中关闭“启用 LLM 验证”，仅使用规则+向量分析以确保实时性。

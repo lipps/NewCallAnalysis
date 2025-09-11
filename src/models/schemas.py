@@ -100,7 +100,7 @@ class CallAnalysisResult(BaseModel):
     
     # 元数据
     analysis_timestamp: str = Field(description="分析时间戳")
-    analysis_model_version: str = Field(default="1.0", description="分析模型版本")
+    model_version: str = Field(default="1.0", description="模型版本")
     confidence_score: float = Field(default=0.0, ge=0.0, le=1.0, description="整体置信度")
 
 

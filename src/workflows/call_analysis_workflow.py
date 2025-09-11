@@ -148,8 +148,7 @@ class CallAnalysisWorkflow:
                 state.config
             )
             
-            # 转换为字典格式以符合WorkflowState的类型要求
-            state.icebreak_result = icebreak_result.dict() if hasattr(icebreak_result, 'dict') else icebreak_result
+            state.icebreak_result = icebreak_result
             
             logger.info(f"破冰分析完成: {state.call_input.call_id}")
             
@@ -178,8 +177,7 @@ class CallAnalysisWorkflow:
                 state.config
             )
             
-            # 转换为字典格式以符合WorkflowState的类型要求
-            state.deduction_result = deduction_result.dict() if hasattr(deduction_result, 'dict') else deduction_result
+            state.deduction_result = deduction_result
             
             logger.info(f"功能演绎分析完成: {state.call_input.call_id}")
             
@@ -208,8 +206,7 @@ class CallAnalysisWorkflow:
                 state.config
             )
             
-            # 转换为字典格式以符合WorkflowState的类型要求
-            state.process_result = process_result.dict() if hasattr(process_result, 'dict') else process_result
+            state.process_result = process_result
             
             logger.info(f"过程分析完成: {state.call_input.call_id}")
             
@@ -238,8 +235,7 @@ class CallAnalysisWorkflow:
                 state.config
             )
             
-            # 转换为字典格式以符合WorkflowState的类型要求
-            state.customer_result = customer_result.dict() if hasattr(customer_result, 'dict') else customer_result
+            state.customer_result = customer_result
             
             logger.info(f"客户分析完成: {state.call_input.call_id}")
             
@@ -270,8 +266,7 @@ class CallAnalysisWorkflow:
                 state.config
             )
             
-            # 转换为字典格式以符合WorkflowState的类型要求
-            state.action_result = action_result.dict() if hasattr(action_result, 'dict') else action_result
+            state.action_result = action_result
             
             logger.info(f"动作分析完成: {state.call_input.call_id}")
             
@@ -285,91 +280,46 @@ class CallAnalysisWorkflow:
             
         return state
     
-    async def _result_aggregation_node(self, state: dict) -> dict:
+    async def _result_aggregation_node(self, state: WorkflowState) -> WorkflowState:
         """结果聚合节点"""
         start_time = asyncio.get_event_loop().time()
         
         try:
-            call_input_data = state["call_input"]
-            if isinstance(call_input_data, CallInput):
-                call_input = call_input_data
-            else:
-                call_input = CallInput(**call_input_data)
-            logger.info(f"开始结果聚合: {call_input.call_id}")
+            logger.info(f"开始结果聚合: {state.call_input.call_id}")
             
             # 构建最终结果
             final_result = CallAnalysisResult(
-                call_id=call_input.call_id,
-                customer_id=call_input.customer_id,
-                sales_id=call_input.sales_id,
-                call_time=call_input.call_time,
+                call_id=state.call_input.call_id,
+                customer_id=state.call_input.customer_id,
+                sales_id=state.call_input.sales_id,
+                call_time=state.call_input.call_time,
                 
-                icebreak=state.get("icebreak_result") or {},
-                演绎=state.get("deduction_result") or {},
-                process=state.get("process_result") or {},
-                customer=state.get("customer_result") or {},
-                actions=state.get("action_result") or {},
+                icebreak=state.icebreak_result or {},
+                演绎=state.deduction_result or {},
+                process=state.process_result or {},
+                customer=state.customer_result or {},
+                actions=state.action_result or {},
                 
                 analysis_timestamp=datetime.now().isoformat(),
-                analysis_model_version="1.0",
-                confidence_score=self._calculate_confidence_dict(state)
+                model_version="1.0",
+                confidence_score=self._calculate_confidence(state)
             )
             
-            state["final_result"] = final_result
+            state.final_result = final_result
             
             # 计算总执行时间
-            total_time = sum(state.get("execution_time", {}).values())
-            logger.info(f"结果聚合完成: {call_input.call_id}, 总耗时: {total_time:.2f}秒")
+            total_time = sum(state.execution_time.values())
+            logger.info(f"结果聚合完成: {state.call_input.call_id}, 总耗时: {total_time:.2f}秒")
             
         except Exception as e:
             logger.error(f"结果聚合失败: {e}")
-            if "errors" not in state:
-                state["errors"] = []
-            state["errors"].append(f"结果聚合失败: {str(e)}")
+            state.errors.append(f"结果聚合失败: {str(e)}")
             
         finally:
             end_time = asyncio.get_event_loop().time()
-            if "execution_time" not in state:
-                state["execution_time"] = {}
-            state["execution_time"]["result_aggregation"] = end_time - start_time
+            state.execution_time["result_aggregation"] = end_time - start_time
             
         return state
-    
-    def _calculate_confidence_dict(self, state: dict) -> float:
-        """计算整体置信度（字典版本）"""
-        try:
-            scores = []
-            
-            # 破冰置信度
-            icebreak_result = state.get("icebreak_result", {})
-            if icebreak_result:
-                icebreak_scores = []
-                for key, value in icebreak_result.items():
-                    if isinstance(value, dict) and "confidence" in value:
-                        icebreak_scores.append(value["confidence"])
-                if icebreak_scores:
-                    scores.append(sum(icebreak_scores) / len(icebreak_scores))
-            
-            # 演绎置信度
-            deduction_result = state.get("deduction_result", {})
-            if deduction_result:
-                deduction_scores = []
-                for key, value in deduction_result.items():
-                    if isinstance(value, dict) and "confidence" in value:
-                        deduction_scores.append(value["confidence"])
-                if deduction_scores:
-                    scores.append(sum(deduction_scores) / len(deduction_scores))
-            
-            # 如果没有任何分数，返回默认值
-            if not scores:
-                return 0.5
-            
-            # 返回平均置信度
-            return sum(scores) / len(scores)
-            
-        except Exception as e:
-            logger.error(f"计算置信度失败: {e}")
-            return 0.5
     
     def _calculate_confidence(self, state: WorkflowState) -> float:
         """计算整体置信度"""

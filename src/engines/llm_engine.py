@@ -49,7 +49,7 @@ class LLMEngine:
         
         # 请求队列和限流
         self.request_queue = asyncio.Queue()
-        self.rate_limiter = asyncio.Semaphore(5)  # 最大并发请求数
+        self.rate_limiter = asyncio.Semaphore(2)  # 最大并发请求数（降低并发以减少拥堵）
         
     async def generate(self,
                       prompt: str,
@@ -97,42 +97,61 @@ class LLMEngine:
             raise
     
     async def _generate_sync(self, **kwargs) -> str:
-        """同步生成"""
-        
+        """同步生成，含重试与指数退避"""
+
         start_time = kwargs.pop('start_time')
-        
+
         async with self.rate_limiter:
-            try:
-                # 添加额外的超时控制
-                response = await asyncio.wait_for(
-                    self.client.chat.completions.create(**kwargs),
-                    timeout=45.0  # 45秒超时
-                )
-                
-                # 更新统计
-                self.request_count += 1
-                if response.usage:
-                    self.total_tokens += response.usage.total_tokens
-                
-                # 记录响应时间
-                response_time = time.time() - start_time
-                
-                if response.choices and response.choices[0].message:
-                    content = response.choices[0].message.content
-                    
-                    logger.debug(f"LLM生成成功，耗时: {response_time:.2f}秒，tokens: {response.usage.total_tokens if response.usage else 0}")
-                    
-                    return content
-                else:
-                    raise ValueError("LLM返回空响应")
-                
-            except Exception as e:
-                self.error_count += 1
-                logger.error(f"LLM请求失败: {type(e).__name__}: {str(e)}")
-                if hasattr(e, 'response') and e.response:
-                    logger.error(f"响应状态码: {e.response.status_code}")
-                    logger.error(f"响应内容: {e.response.text}")
-                raise
+            max_retries = 3
+            base_delay = 1.5
+            for attempt in range(max_retries):
+                try:
+                    # 统一的请求超时
+                    response = await asyncio.wait_for(
+                        self.client.chat.completions.create(**kwargs),
+                        timeout=100.0  # 100秒超时
+                    )
+
+                    # 更新统计
+                    self.request_count += 1
+                    if response.usage:
+                        self.total_tokens += response.usage.total_tokens
+
+                    # 记录响应时间
+                    response_time = time.time() - start_time
+
+                    if response.choices and response.choices[0].message:
+                        content = response.choices[0].message.content
+                        logger.debug(
+                            f"LLM生成成功，耗时: {response_time:.2f}秒，tokens: {response.usage.total_tokens if response.usage else 0}"
+                        )
+                        return content
+                    else:
+                        raise ValueError("LLM返回空响应")
+
+                except (asyncio.TimeoutError, TimeoutError) as e:
+                    logger.error(f"LLM请求超时 (尝试 {attempt + 1}/{max_retries}): {e}")
+                    if attempt < max_retries - 1:
+                        await asyncio.sleep(base_delay * (2 ** attempt))
+                        continue
+                    else:
+                        self.error_count += 1
+                        raise
+                except Exception as e:
+                    logger.error(f"LLM请求失败: {type(e).__name__}: {str(e)}")
+                    if hasattr(e, 'response') and e.response:
+                        try:
+                            logger.error(f"响应状态码: {e.response.status_code}")
+                            logger.error(f"响应内容: {e.response.text}")
+                        except Exception:
+                            pass
+                    # 对非超时错误也做有限重试
+                    if attempt < max_retries - 1:
+                        await asyncio.sleep(base_delay * (2 ** attempt))
+                        continue
+                    else:
+                        self.error_count += 1
+                        raise
     
     async def _generate_stream(self, **kwargs) -> AsyncGenerator[str, None]:
         """流式生成"""

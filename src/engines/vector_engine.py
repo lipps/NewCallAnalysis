@@ -99,10 +99,10 @@ class VectorSearchEngine:
                     name=self.collection_name
                 )
                 logger.info(f"获取已存在的集合: {self.collection_name}")
-            except Exception:
-                # 如果集合不存在，创建新集合（不传递复杂的metadata）
+            except:
                 self.collection = self.chroma_client.create_collection(
-                    name=self.collection_name
+                    name=self.collection_name,
+                    metadata={"description": "销售通话质检知识库"}
                 )
                 logger.info(f"创建新集合: {self.collection_name}")
             
@@ -142,10 +142,28 @@ class VectorSearchEngine:
                 "examples": ["我是益盟操盘手专员", "我是操盘手老师", "我是股票分析师"]
             },
             {
+                "text": "我是益盟操盘手高级专员小李，帮助客户更好地使用产品",
+                "category": "icebreak",
+                "point": "professional_identity",
+                "examples": ["我是益盟操盘手高级专员", "我是益盟客服专员", "我是益盟客服"]
+            },
+            {
+                "text": "我是益盟股份客服，帮您激活开通了我们新版VIP体验特权",
+                "category": "icebreak",
+                "point": "professional_identity",
+                "examples": ["我是益盟股份客服", "我是操盘手老师", "我是益盟客服"]
+            },
+            {
                 "text": "我们可以帮助您把握买卖点机会，提升投资收益",
                 "category": "icebreak", 
                 "point": "value_help",
                 "examples": ["帮您提升收益", "帮助您把握机会", "为您解决投资问题"]
+            },
+            {
+                "text": "我们可以帮助您把握后面更好的机会，提高投资胜率",
+                "category": "icebreak", 
+                "point": "value_help",
+                "examples": ["帮您提升收益", "帮助您提高投资胜率", "为您解决投资问题"]
             },
             {
                 "text": "耽误您两三分钟时间，简单给您介绍一下我们的服务",
@@ -174,10 +192,22 @@ class VectorSearchEngine:
                 "examples": ["B点买入", "S点卖出", "买卖点信号", "操盘线提示"]
             },
             {
+                "text": "BS点是趋势指标，出现B点代表着这支股票的上涨趋势形成，S点代表着下跌趋势形成，这是我们的核心买卖点提示功能",
+                "category": "deduction",
+                "point": "bs_explained",
+                "examples": ["B点买入", "S点卖出", "买卖点信号", "操盘线提示"]
+            },
+            {
                 "text": "我们分析不同周期的共振，包括日线、周线的趋势配合",
                 "category": "deduction", 
                 "point": "period_resonance_explained",
                 "examples": ["周期共振", "多时间级别", "日线周线配合"]
+            },
+            {
+                "text": "周期共振就是看大做小，看长做短，长周期呢，我们看大趋势，短周期可以做具体操作",
+                "category": "deduction", 
+                "point": "period_resonance_explained",
+                "examples": ["周期共振", "看大做小", "看长做短"]
             },
             {
                 "text": "主力控盘资金指标可以看到大资金的进出动向和筹码分布",
@@ -186,10 +216,28 @@ class VectorSearchEngine:
                 "examples": ["主力资金", "控盘资金", "筹码分布", "资金流向"]
             },
             {
-                "text": "步步高是我们VIP客户专享的高级指标功能",
+                "text": "点击右侧【控盘资金VIP】,点设置参数, 把累计天数改为13天，资金我们要看他的趋势行为,13日是我们研发出来比较适合做波段的周期",
+                "category": "deduction",
+                "point": "control_funds_explained", 
+                "examples": ["有控盘能力的主力资金", "控盘资金", "筹码分布", "资金流向"]
+            },
+            {
+                "text": "红色的面积代表这些有控盘能力的主力资金在这段时期的净流入的,也就是说,控盘的主要是主力! 绿色面积代表主力资金该短时间是净流出的,也就是说主力在出货了,股价没有主力的支持,相对也难以维持上涨",
+                "category": "deduction",
+                "point": "control_funds_explained", 
+                "examples": ["有控盘能力的主力资金", "控盘资金", "筹码分布", "净流入", "净流出", "资金流向"]
+            },
+            {
+                "text": "步步高是显示量能活跃，股价还处于加速期",
                 "category": "deduction",
                 "point": "bubugao_explained",
-                "examples": ["步步高功能", "VIP专属", "高级指标"]
+                "examples": ["步步高功能", "步步高VIP", "步步高波段战法"]
+            },
+            {
+                "text": "步步高是红色线代表活跃指数，柱子代表活跃程度！ 比如刚开始启动的蓝色就是稳上手阶段，黄色呢就是中继接力，橙色就是股价很可能要加速了",
+                "category": "deduction",
+                "point": "bubugao_explained",
+                "examples": ["步步高功能", "步步高VIP", "红色线", "紫柱", "黄柱", "橙柱", "柱子代表活跃程度"]
             },
             {
                 "text": "根据历史回测数据，使用我们的信号可以提升20%的收益率",

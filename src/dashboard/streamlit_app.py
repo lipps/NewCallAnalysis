@@ -178,7 +178,7 @@ class CallAnalysisDashboard:
                         "call_input": call_data,
                         "config": config.dict()
                     },
-                    timeout=60
+                    timeout=280
                 )
                 
                 if response.status_code == 200:

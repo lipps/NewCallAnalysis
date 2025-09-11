@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 
 from src.models.schemas import CallInput, AnalysisConfig
-from src.workflows.simplified_workflow import SimpleCallAnalysisWorkflow  
+from src.workflows.call_analysis_workflow import CallAnalysisWorkflow  
 from src.engines.vector_engine import get_vector_engine
 from src.engines.rule_engine import RuleEngine
 from src.engines.llm_engine import get_llm_engine
@@ -36,18 +36,6 @@ async def demo_single_analysis():
 客户：可以，我想了解一下。"""
     
     try:
-        # 检查API Key配置
-        from src.config.settings import settings
-        has_valid_api_key = (
-            settings.model.openai_api_key and 
-            settings.model.openai_api_key != "" and 
-            settings.model.openai_api_key != "test_key_for_demo" and
-            not settings.model.openai_api_key.startswith("你的")
-        )
-        
-        if not has_valid_api_key:
-            print("⚠️  使用无LLM模式运行（规则引擎 + 向量检索）")
-        
         # 创建输入
         call_input = CallInput(
             call_id="demo_001",
@@ -57,10 +45,10 @@ async def demo_single_analysis():
             call_time=datetime.now().isoformat()
         )
         
-        # 创建配置（根据API Key可用性动态调整）
+        # 创建配置
         config = AnalysisConfig(
             enable_vector_search=True,
-            enable_llm_validation=has_valid_api_key,  # 根据API Key可用性调整
+            enable_llm_validation=True,
             confidence_threshold=0.7
         )
         
@@ -70,8 +58,8 @@ async def demo_single_analysis():
         rule_engine = RuleEngine()
         llm_engine = get_llm_engine()
         
-        # 创建工作流（使用简化版本）
-        workflow = SimpleCallAnalysisWorkflow(
+        # 创建工作流
+        workflow = CallAnalysisWorkflow(
             vector_engine=vector_engine,
             rule_engine=rule_engine,
             llm_engine=llm_engine
@@ -147,30 +135,14 @@ async def demo_batch_analysis():
     ]
     
     try:
-        # 检查API Key配置
-        from src.config.settings import settings
-        has_valid_api_key = (
-            settings.model.openai_api_key and 
-            settings.model.openai_api_key != "" and 
-            settings.model.openai_api_key != "test_key_for_demo" and
-            not settings.model.openai_api_key.startswith("你的")
-        )
-        
-        # 创建配置
-        config = AnalysisConfig(
-            enable_vector_search=True,
-            enable_llm_validation=has_valid_api_key,
-            confidence_threshold=0.7
-        )
-        
         # 初始化引擎
         print("初始化分析引擎...")
         vector_engine = await get_vector_engine()
         rule_engine = RuleEngine()
         llm_engine = get_llm_engine()
         
-        # 创建工作流（使用简化版本）
-        workflow = SimpleCallAnalysisWorkflow(
+        # 创建工作流
+        workflow = CallAnalysisWorkflow(
             vector_engine=vector_engine,
             rule_engine=rule_engine,
             llm_engine=llm_engine
@@ -183,7 +155,7 @@ async def demo_batch_analysis():
         
         results = await workflow.execute_batch(
             batch_calls, 
-            config,
+            AnalysisConfig(),
             max_concurrency=3
         )
         
@@ -225,8 +197,8 @@ async def demo_performance_test():
         rule_engine = RuleEngine()
         llm_engine = get_llm_engine()
         
-        # 创建工作流（使用简化版本）
-        workflow = SimpleCallAnalysisWorkflow(
+        # 创建工作流
+        workflow = CallAnalysisWorkflow(
             vector_engine=vector_engine,
             rule_engine=rule_engine,
             llm_engine=llm_engine
@@ -254,17 +226,7 @@ async def demo_performance_test():
             transcript=test_transcript
         )
         
-        # 创建测试配置
-        from src.config.settings import settings
-        has_valid_api_key = (
-            settings.model.openai_api_key and 
-            settings.model.openai_api_key != "" and 
-            settings.model.openai_api_key != "test_key_for_demo" and
-            not settings.model.openai_api_key.startswith("你的")
-        )
-        config = AnalysisConfig(enable_llm_validation=has_valid_api_key)
-        
-        result = await workflow.execute(call_input, config)
+        result = await workflow.execute(call_input)
         end_time = time.time()
         
         single_time = end_time - start_time
@@ -280,7 +242,6 @@ async def demo_performance_test():
         
         concurrent_results = await workflow.execute_batch(
             concurrent_inputs,
-            config,
             max_concurrency=3
         )
         
@@ -358,18 +319,10 @@ async def main():
         # 检查环境
         from src.config.settings import settings
         
-        # 检测API Key配置
-        has_valid_api_key = (
-            settings.model.openai_api_key and 
-            settings.model.openai_api_key != "" and 
-            settings.model.openai_api_key != "test_key_for_demo" and
-            not settings.model.openai_api_key.startswith("你的")
-        )
-        
-        if not has_valid_api_key:
-            print("⚠️  警告: 未配置有效的OPENAI_API_KEY，将以无LLM模式运行")
-            print("   如需启用完整功能，请在.env文件中配置真实的API密钥")
-            print("   当前将仅使用规则引擎和向量检索功能")
+        if not settings.model.openai_api_key:
+            print("⚠️  警告: 未配置OPENAI_API_KEY，LLM功能将无法使用")
+            print("   请在.env文件中配置API密钥")
+            return
         
         print(f"✅ 系统配置正常")
         print(f"   模型: {settings.model.llm_model}")

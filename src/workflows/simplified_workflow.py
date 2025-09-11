@@ -122,7 +122,7 @@ class SimpleCallAnalysisWorkflow:
                 
                 confidence_score=confidence_score,
                 execution_time=execution_times,
-                analysis_model_version="1.0.0"
+                model_version="1.0.0"
             )
             
             logger.info(f"工作流执行完成: {call_input.call_id}, 置信度: {confidence_score:.3f}")
@@ -178,7 +178,7 @@ class SimpleCallAnalysisWorkflow:
                 error_result = CallAnalysisResult(
                     call_id=inputs[i].call_id,
                     confidence_score=0.0,
-                    analysis_model_version="1.0.0"
+                    model_version="1.0.0"
                 )
                 processed_results.append(error_result)
             else:
