@@ -307,8 +307,8 @@ class VectorSearchEngine:
                             query: str,
                             text: str,
                             category: str = None,
-                            top_k: int = 5,
-                            similarity_threshold: float = 0.7) -> Optional[Dict[str, Any]]:
+                            top_k: int = 8,
+                            similarity_threshold: float = 0.6) -> Optional[Dict[str, Any]]:
         """搜索相似文档"""
         
         try:

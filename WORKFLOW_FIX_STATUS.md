@@ -129,3 +129,70 @@
   - 将 `llm_engine.py` 的并发/超时/重试参数按需调小。
 
 > 注：若无有效 `OPENAI_API_KEY` 或网络受限，仍建议在配置中关闭“启用 LLM 验证”，仅使用规则+向量分析以确保实时性。
+
+---
+
+## 2025-09-11 证据一致性、信号透明化与召回优化
+
+本轮变更聚焦三个方面：
+
+- 证据一致性：当没有“可引用的原文证据”时，不再给 LLM 打分，确保“有分必有证”。
+- 信号透明化：UI 与 API 返回各引擎的贡献明细，便于调参与排障。
+- 语义召回：适度放宽向量相似度阈值，增强口语化话术的识别能力。
+
+### 主要改动（含文件路径）
+
+- 向量召回
+  - `src/engines/vector_engine.py`
+    - `search_similar(..., similarity_threshold=0.6)`（原 0.7）。
+
+- LLM 提示与证据约束
+  - `src/processors/icebreak_processor.py`
+  - `src/processors/deduction_processor.py`
+    - 强化提示：证据必须直接摘自原文，不得为空或使用“无/N/A/NA/未知/不可用/不适用/无法提供/无证据”等占位词；否则判“否”。
+    - 解析与融合：若 LLM 证据为空或命中无效集合，则将 LLM 置信度置 0（不计分）。
+    - 当 rule/vector/llm 三者皆无信号或证据来源为 `none` 时，命中=否，`final_confidence=0`。
+
+- 证据回填与来源标注
+  - `src/processors/icebreak_processor.py` / `src/processors/deduction_processor.py`
+    - 证据优先级：rule → llm → vector（若前两者为空，用向量文档回填）。
+    - 新增 `evidence_source` 字段（rule/vector/llm/none）。
+
+- 信号透明化（API 与 UI）
+  - `src/models/schemas.py`
+    - `EvidenceHit` 增补字段：`evidence_source`、`signals`（包含 `rule_confidence/vector_similarity/llm_confidence` 与各权重、最终置信度、阈值、contributors）。
+  - `src/dashboard/streamlit_app.py`
+    - 破冰/演绎表格新增列：证据来源、R信/V相/L信（显示各引擎贡献）。
+
+- 语法修复与稳健性
+  - `src/processors/icebreak_processor.py`
+    - 修复 f-string 条件格式化 `:.3f` 导致的 `invalid decimal literal`（改为先构造安全字符串）。
+    - LLM 提示中“向量检索结果”改为预格式化的 `sim_str`。
+  - 新增单测：`tests/test_icebreak_processor.py`，覆盖 LLM 提示在有/无向量结果时的安全构造。
+
+### git diff 摘要（核心片段）
+
+- vector 阈值：
+  - `similarity_threshold: 0.7 -> 0.6`（`src/engines/vector_engine.py`）
+- EvidenceHit 扩展：
+  - `+ evidence_source: str`, `+ signals: Dict[str, Any]`（`src/models/schemas.py`）
+- 决策融合：
+  - LLM 无证据 → `llm_conf_val = 0`；三信号皆 0 或 `evidence_source=none` → 命中=否，`final_confidence=0`；（icebreak/deduction 两处 `_combine_results`）
+- UI 列展示：
+  - 破冰/演绎表新增“证据来源”“R信/V相/L信”（`src/dashboard/streamlit_app.py`）
+- 语法/稳定性：
+  - f-string 修复 & 调试输出安全化；LLM 提示中 `sim_str` 使用。
+- 单测：
+  - `tests/test_icebreak_processor.py` 新增两用例，确保提示构造无异常且内容符合预期。
+
+### 影响评估
+
+- 质量一致性：不再出现“证据为空但 L信很高”的违和场景。
+- 可观测性：前端可见各引擎贡献，API 也返回 `signals` 便于日志比对与自动化监控。
+- 召回提升：在口语化话术上，向量命中率将提升（同时注意误报风险）。
+
+### 验证建议
+
+1. `/statistics` 检查：`vector_engine.document_count > 0`，`llm_engine.error_count` 稳定。
+2. 使用此前“证据为空”的样例复测：应看到 L信=0、命中=否 或有向量/规则回填证据后命中。
+3. 观察 Dashboard 新列：证据来源、R信/V相/L信 与日志/后端 `signals` 一致。

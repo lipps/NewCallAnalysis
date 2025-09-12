@@ -39,6 +39,9 @@ class ProcessProcessor:
             
             # 计算词数统计
             word_stats = self._calculate_word_statistics(content_analysis)
+
+            # 识别“要钱行为”
+            money_ask = self._detect_money_ask(processed_text)
             
             # 构建结果
             result = ProcessModel(
@@ -47,7 +50,9 @@ class ProcessProcessor:
                 deal_or_visit=deal_or_visit,
                 total_words=word_stats['total_words'],
                 sales_words=word_stats['sales_words'],
-                customer_words=word_stats['customer_words']
+                customer_words=word_stats['customer_words'],
+                money_ask_count=money_ask['count'],
+                money_ask_quotes=money_ask['quotes']
             )
             
             logger.info(f"过程指标统计完成，讲解时长: {explain_duration:.1f}分钟")
@@ -196,3 +201,44 @@ class ProcessProcessor:
                 'sales_words': 0,
                 'customer_words': 0
             }
+
+    def _detect_money_ask(self, processed_text: Dict[str, Any]) -> Dict[str, Any]:
+        """识别销售的要钱/付费/下单类行为并统计次数与证据。
+
+        定义：销售明确提及付费、购买、下单等涉及金钱的要求或建议购买。
+        每命中一次（句子或话轮中出现一次相关表达）计 1 次。
+        """
+        try:
+            sales_utts = processed_text.get('content_analysis', {}).get('sales_content', []) or []
+
+            # 金额/数字：如 288元/￥199/99块/一年/一季度等
+            price_num = r"(￥|¥|RMB|人民币)?\s*\d+(\.\d+)?\s*(元|块|块钱|人民币|rmb)?"
+            cn_num = r"(十|百|千|万|一|二|三|四|五|六|七|八|九|两)+\s*(元|块)"
+
+            # 付费动作/购买/充值/开通/办理等
+            pay_verbs = r"(下单|购买|买|付费|付款|支付|转账|打款|充值|开通|办理|订购|升级|续费|会员|套餐|开卡|激活|成交|签单|扫(码|二维码))"
+
+            # 建议/推动购买的措辞
+            push_phrase = r"(可以|建议|不如|要不要|先|考虑|试试).{0,6}(下单|购买|开通|办理|升级|充值)"
+
+            combined = re.compile(
+                rf"({price_num}|{cn_num}|{pay_verbs}|{push_phrase})",
+                re.IGNORECASE
+            )
+
+            quotes: List[str] = []
+            count = 0
+            for utt in sales_utts:
+                if not utt:
+                    continue
+                matches = list(combined.finditer(utt))
+                if matches:
+                    count += 1
+                    # 证据：尽量返回整句或短片段
+                    snippet = utt
+                    if len(snippet) > 120:
+                        snippet = snippet[:120] + "..."
+                    quotes.append(snippet)
+            return {"count": count, "quotes": quotes[:20]}
+        except Exception:
+            return {"count": 0, "quotes": []}

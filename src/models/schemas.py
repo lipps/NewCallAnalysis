@@ -17,6 +17,8 @@ class EvidenceHit(BaseModel):
     hit: bool = Field(description="是否命中")
     evidence: str = Field(default="", description="证据片段")
     confidence: float = Field(default=0.0, ge=0.0, le=1.0, description="置信度")
+    evidence_source: str = Field(default="none", description="证据来源: rule/vector/llm/combined/none")
+    signals: Dict[str, Any] = Field(default_factory=dict, description="融合信号明细: rule_confidence/vector_similarity/llm_confidence/weights等")
 
 
 class IcebreakModel(BaseModel):
@@ -29,6 +31,13 @@ class IcebreakModel(BaseModel):
     refuse_reason: str = Field(default="", description="拒绝沟通原因")
     refuse_recover_count: int = Field(default=0, ge=0, description="应对拒绝动作次数")
     next_appointment: bool = Field(default=False, description="是否预约下次沟通")
+    # 拒绝/抗拒识别增强输出
+    rejection_reasons: List[Dict[str, str]] = Field(default_factory=list, description="客户拒绝/抗拒原因列表[{type, quote}]")
+    handling_strategies: List[Dict[str, str]] = Field(default_factory=list, description="销售应对拒绝动作[{strategy, quote}]")
+    handle_objection_count: int = Field(default=0, ge=0, description="应对拒绝动作次数(统计)")
+    # KPI: 分类计数与占比，便于可视化
+    rejection_kpi: Dict[str, Any] = Field(default_factory=dict, description="客户拒绝KPI: total/by_type[{type,count,ratio}]")
+    handling_kpi: Dict[str, Any] = Field(default_factory=dict, description="应对策略KPI: total/by_strategy[{strategy,count,ratio}]")
 
 
 class DeductionModel(BaseModel):
@@ -49,6 +58,9 @@ class ProcessModel(BaseModel):
     total_words: int = Field(default=0, ge=0, description="总字数")
     sales_words: int = Field(default=0, ge=0, description="销售话语字数")
     customer_words: int = Field(default=0, ge=0, description="客户话语字数")
+    # 要钱行为统计
+    money_ask_count: int = Field(default=0, ge=0, description="要钱/购买/付费类行为次数")
+    money_ask_quotes: List[str] = Field(default_factory=list, description="要钱行为证据片段列表")
 
 
 class CustomerModel(BaseModel):

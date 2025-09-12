@@ -218,6 +218,9 @@ class CallAnalysisDashboard:
             self._render_deduction_results(result.演绎, display_config)
             self._render_customer_analysis(result.customer)
         
+        # 客户拒绝沟通面板（独立展示结构化输出）
+        self._render_rejection_panel(result.icebreak)
+
         # 动作执行情况
         self._render_action_execution(result.actions)
         
@@ -280,11 +283,16 @@ class CallAnalysisDashboard:
         # 创建数据框
         df_data = []
         for point_name, point_data in icebreak_points.items():
+            sig = getattr(point_data, "signals", {}) or {}
             df_data.append({
                 "要点": point_name,
                 "命中": "✅" if point_data.hit else "❌",
                 "置信度": f"{point_data.confidence:.2f}" if display_config.get("show_confidence") else "-",
-                "证据片段": point_data.evidence if display_config.get("show_evidence") and point_data.evidence else "-"
+                "证据片段": point_data.evidence if display_config.get("show_evidence") and point_data.evidence else "-",
+                "证据来源": getattr(point_data, "evidence_source", "-"),
+                "R信": f"{sig.get('rule_confidence', 0):.2f}" if display_config.get("show_confidence") else "-",
+                "V相": f"{sig.get('vector_similarity', 0):.2f}" if display_config.get("show_confidence") else "-",
+                "L信": f"{sig.get('llm_confidence', 0):.2f}" if display_config.get("show_confidence") else "-",
             })
         
         df = pd.DataFrame(df_data)
@@ -301,6 +309,95 @@ class CallAnalysisDashboard:
             color_discrete_map={"命中": "#2E8B57", "未命中": "#DC143C"}
         )
         st.plotly_chart(fig_pie, use_container_width=True)
+
+        # KPI: 客户拒绝/应对策略统计
+        kpi_col1, kpi_col2 = st.columns(2)
+        try:
+            if hasattr(icebreak_data, 'rejection_kpi') and icebreak_data.rejection_kpi:
+                with kpi_col1:
+                    st.markdown("**客户拒绝-KPI**")
+                    total_r = icebreak_data.rejection_kpi.get('total', 0)
+                    by_type = icebreak_data.rejection_kpi.get('by_type', [])
+                    df_r = pd.DataFrame(by_type)
+                    if not df_r.empty:
+                        df_r['ratio'] = (df_r['ratio'] * 100).map(lambda x: f"{x:.1f}%")
+                    st.metric("拒绝总次数", f"{total_r}")
+                    if not df_r.empty:
+                        st.dataframe(df_r, use_container_width=True)
+                        # 饼图（按类型计数）
+                        df_r_counts = pd.DataFrame(by_type)
+                        df_r_counts = df_r_counts[df_r_counts['count'] > 0]
+                        if not df_r_counts.empty:
+                            fig_r_pie = px.pie(df_r_counts, values='count', names='type', title='客户拒绝-类型占比')
+                            st.plotly_chart(fig_r_pie, use_container_width=True)
+                            # 条形图（按次数降序）
+                            df_r_counts = df_r_counts.sort_values('count', ascending=False)
+                            fig_r_bar = px.bar(df_r_counts, x='type', y='count', title='客户拒绝-类型次数', text='count')
+                            fig_r_bar.update_layout(xaxis_title='类型', yaxis_title='次数', showlegend=False)
+                            st.plotly_chart(fig_r_bar, use_container_width=True)
+            if hasattr(icebreak_data, 'handling_kpi') and icebreak_data.handling_kpi:
+                with kpi_col2:
+                    st.markdown("**应对策略-KPI**")
+                    total_h = icebreak_data.handling_kpi.get('total', 0)
+                    by_st = icebreak_data.handling_kpi.get('by_strategy', [])
+                    df_h = pd.DataFrame(by_st)
+                    if not df_h.empty:
+                        df_h['ratio'] = (df_h['ratio'] * 100).map(lambda x: f"{x:.1f}%")
+                    st.metric("应对总次数", f"{total_h}")
+                    if not df_h.empty:
+                        st.dataframe(df_h, use_container_width=True)
+                        # 饼图（按策略计数）
+                        df_h_counts = pd.DataFrame(by_st)
+                        df_h_counts = df_h_counts[df_h_counts['count'] > 0]
+                        if not df_h_counts.empty:
+                            fig_h_pie = px.pie(df_h_counts, values='count', names='strategy', title='应对策略-占比')
+                            st.plotly_chart(fig_h_pie, use_container_width=True)
+                            # 条形图（按次数降序）
+                            df_h_counts = df_h_counts.sort_values('count', ascending=False)
+                            fig_h_bar = px.bar(df_h_counts, x='strategy', y='count', title='应对策略-次数', text='count')
+                            fig_h_bar.update_layout(xaxis_title='策略', yaxis_title='次数', showlegend=False)
+                            st.plotly_chart(fig_h_bar, use_container_width=True)
+        except Exception as _:
+            pass
+
+    def _render_rejection_panel(self, icebreak_data):
+        """渲染 客户拒绝沟通情况 面板"""
+        st.subheader("🙅 客户拒绝沟通情况")
+        try:
+            count = getattr(icebreak_data, 'handle_objection_count', None)
+            if count is None:
+                # 兼容旧字段
+                count = getattr(icebreak_data, 'refuse_recover_count', 0)
+            st.metric("业务员应对拒绝次数", f"{count}")
+
+            rr = getattr(icebreak_data, 'rejection_reasons', []) or []
+            hs = getattr(icebreak_data, 'handling_strategies', []) or []
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("**客户拒绝沟通原因**")
+                if rr:
+                    df_rr = pd.DataFrame(rr)
+                    # 统一列名
+                    if 'type' in df_rr.columns and 'quote' in df_rr.columns:
+                        df_rr = df_rr[['type', 'quote']]
+                        df_rr.columns = ['类型', '原文片段']
+                    st.dataframe(df_rr, use_container_width=True)
+                else:
+                    st.info("未识别到明显的拒绝/抗拒表达")
+
+            with col2:
+                st.markdown("**应对拒绝的做法**")
+                if hs:
+                    df_hs = pd.DataFrame(hs)
+                    if 'strategy' in df_hs.columns and 'quote' in df_hs.columns:
+                        df_hs = df_hs[['strategy', 'quote']]
+                        df_hs.columns = ['策略', '原文片段']
+                    st.dataframe(df_hs, use_container_width=True)
+                else:
+                    st.info("未识别到明确的应对拒绝动作")
+        except Exception as e:
+            st.warning(f"拒绝沟通面板渲染异常: {e}")
     
     def _render_deduction_results(self, deduction_data, display_config: Dict[str, Any]):
         """渲染演绎结果"""
@@ -319,11 +416,16 @@ class CallAnalysisDashboard:
         # 创建数据框
         df_data = []
         for point_name, point_data in deduction_points.items():
+            sig = getattr(point_data, "signals", {}) or {}
             df_data.append({
                 "功能点": point_name,
                 "讲解": "✅" if point_data.hit else "❌",
                 "置信度": f"{point_data.confidence:.2f}" if display_config.get("show_confidence") else "-",
-                "证据片段": point_data.evidence if display_config.get("show_evidence") and point_data.evidence else "-"
+                "证据片段": point_data.evidence if display_config.get("show_evidence") and point_data.evidence else "-",
+                "证据来源": getattr(point_data, "evidence_source", "-"),
+                "R信": f"{sig.get('rule_confidence', 0):.2f}" if display_config.get("show_confidence") else "-",
+                "V相": f"{sig.get('vector_similarity', 0):.2f}" if display_config.get("show_confidence") else "-",
+                "L信": f"{sig.get('llm_confidence', 0):.2f}" if display_config.get("show_confidence") else "-",
             })
         
         df = pd.DataFrame(df_data)
@@ -373,6 +475,16 @@ class CallAnalysisDashboard:
                 deal_status,
                 delta=None
             )
+
+        # 要钱行为展示
+        with st.expander("💰 要钱/购买类行为"):
+            count = getattr(process_data, 'money_ask_count', 0)
+            st.metric("要钱行为次数", f"{count}")
+            quotes = getattr(process_data, 'money_ask_quotes', []) or []
+            if quotes:
+                st.write("**证据片段：**")
+                for i, q in enumerate(quotes, 1):
+                    st.write(f"{i}. {q}")
     
     def _render_customer_analysis(self, customer_data):
         """渲染客户分析"""
