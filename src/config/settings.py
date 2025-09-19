@@ -10,14 +10,15 @@ class DatabaseSettings(BaseSettings):
     """数据库配置"""
     chroma_persist_directory: str = Field(default="./data/chroma")
     collection_name: str = Field(default="call_analysis")
-    
-    
+    USE_NEBULA: bool = Field(default=False)
+
+
 class ModelSettings(BaseSettings):
     """模型配置"""
     openai_api_key: str = Field(default="")
     openai_base_url: str = Field(default="https://dashscope.aliyuncs.com/compatible-mode/v1")
     embedding_model: str = Field(default="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
-    llm_model: str = Field(default="deepseek-r1")
+    llm_model: str = Field(default="deepseek-v3.1")
     temperature: float = Field(default=0.1, ge=0.0, le=2.0)
     max_tokens: int = Field(default=2000, ge=100, le=4000)
 
@@ -30,13 +31,6 @@ class ProcessingSettings(BaseSettings):
     timeout_seconds: int = Field(default=300, ge=30, le=3600)
 
 
-class LoggingSettings(BaseSettings):
-    """日志配置"""
-    log_level: str = Field(default="INFO")
-    log_file: str = Field(default="./logs/app.log")
-    log_format: str = Field(default="{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{line} | {message}")
-
-
 class ServerSettings(BaseSettings):
     """服务器配置"""
     host: str = Field(default="0.0.0.0")
@@ -45,19 +39,135 @@ class ServerSettings(BaseSettings):
     reload: bool = Field(default=False)
 
 
+# 新增痛点量化相关配置
+PAIN_POINT_DETECTION_RULES = {
+    "loss": {
+        "keywords": [
+            "亏损", "亏了", "损失", "套牢", "被套", "赔钱", "亏本",
+            "缩水", "蒸发", "血亏", "巨亏", "深套", "腰斩"
+        ],
+        "quantification_patterns": [
+            r"亏(了|损)?(\d+\.?\d*)([万千])?",
+            r"损失(\d+\.?\d*)([万千])?",
+            r"套(了|牢)?(\d+\.?\d*)([万千])?",
+            r"跌(了|去)?(\d+\.?\d*)([万千个]点|%)",
+        ],
+        "severity_keywords": {
+            "轻微": ["小亏", "小损失", "轻微亏损"],
+            "中等": ["亏损", "套牢", "被套"],
+            "严重": ["巨亏", "血亏", "深套", "腰斩", "爆仓"]
+        }
+    },
+    "miss_opportunity": {
+        "keywords": [
+            "踏空", "错过", "没买到", "没上车", "看着涨", "眼睁睁",
+            "后悔", "早知道", "没抓住", "失去机会"
+        ],
+        "quantification_patterns": [
+            r"错过(\d+\.?\d*)([万千])?收益",
+            r"没赚到(\d+\.?\d*)([万千])?",
+            r"涨了(\d+\.?\d*)([万千个]点|%)",
+        ]
+    },
+    "chase_high": {
+        "keywords": [
+            "追高", "高位", "山顶", "接盘", "站岗", "买在高点",
+            "追涨", "冲动买入", "FOMO"
+        ],
+        "quantification_patterns": [
+            r"(\d+\.?\d*)([万千])?买在高点",
+            r"高位买入(\d+\.?\d*)([万千])?",
+        ]
+    },
+    "panic_sell": {
+        "keywords": [
+            "割肉", "恐慌", "止损", "忍痛卖出", "低位卖出",
+            "抛售", "清仓", "斩仓", "认栽"
+        ],
+        "quantification_patterns": [
+            r"(\d+\.?\d*)([万千])?割肉",
+            r"止损(\d+\.?\d*)([万千])?",
+        ]
+    }
+}
+
+# 量化提取正则表达式
+QUANTIFICATION_EXTRACTORS = {
+    "amount": [
+        r"(\d+\.?\d*)万",
+        r"(\d+\.?\d*)千", 
+        r"(\d+\.?\d*)块",
+        r"(\d+\.?\d*)元"
+    ],
+    "frequency": [
+        r"(\d+)次",
+        r"(\d+)回",
+        r"(\d+)遍"
+    ],
+    "ratio": [
+        r"(\d+\.?\d*)%",
+        r"(\d+\.?\d*)个点",
+        r"跌了(\d+\.?\d*)成"
+    ]
+}
+
+# 痛点量化配置
+class PainPointSettings(BaseSettings):
+    """痛点量化配置"""
+    detection_rules: Dict[str, Any] = Field(default_factory=lambda: PAIN_POINT_DETECTION_RULES)
+    quantification_extractors: Dict[str, List[str]] = Field(default_factory=lambda: QUANTIFICATION_EXTRACTORS)
+    
+    # 痛点量化阈值配置
+    confidence_threshold: float = Field(default=0.3, ge=0.0, le=1.0, description="痛点检测置信度阈值")
+    severity_thresholds: Dict[str, Dict[str, float]] = Field(
+        default_factory=lambda: {
+            "loss": {
+                "low": 0.1,     # 轻微损失
+                "medium": 0.3,   # 中等损失
+                "high": 0.6      # 严重损失
+            },
+            "miss_opportunity": {
+                "low": 0.1,      # 小机会
+                "medium": 0.3,   # 中等机会
+                "high": 0.6      # 重大机会
+            }
+        },
+        description="不同痛点类型的严重程度阈值"
+    )
+    
+    # 量化权重配置
+    quantification_weights: Dict[str, float] = Field(
+        default_factory=lambda: {
+            "amount": 0.4,       # 金额权重
+            "frequency": 0.2,     # 频次权重
+            "ratio": 0.3,         # 比例权重
+            "severity": 0.1       # 严重程度权重
+        },
+        description="不同量化维度的权重配置"
+    )
+
+
+class LoggingSettings(BaseSettings):
+    """日志配置"""
+    log_level: str = Field(default="INFO")
+    log_file: str = Field(default="./logs/app.log")
+    log_format: str = Field(default="{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{line} | {message}")
+
+
 class AppSettings(BaseSettings):
     """应用配置"""
     app_name: str = Field(default="销售通话质检系统")
     version: str = Field(default="1.0.0")
     description: str = Field(default="基于AI的销售通话质检与分析系统")
-    
+
     # 子配置
     database: DatabaseSettings = Field(default_factory=DatabaseSettings)
     model: ModelSettings = Field(default_factory=ModelSettings)
     processing: ProcessingSettings = Field(default_factory=ProcessingSettings)
     logging: LoggingSettings = Field(default_factory=LoggingSettings)
     server: ServerSettings = Field(default_factory=ServerSettings)
-    
+    pain_point: PainPointSettings = Field(default_factory=PainPointSettings)
+
     # 统一的模型配置 - 合并 Config 类的设置
     model_config = {
         "extra": "allow",
@@ -66,6 +176,20 @@ class AppSettings(BaseSettings):
         "env_nested_delimiter": "__"
     }
 
+    CUSTOMER_PROBING_PROMPT: str = """
+    你是一个通话分析专家。请分析以下通话记录，判断坐席是否考察了客户的个人情况。
+    考察客户情况包括但不限于询问或提及：
+    1. 仓位、资金量、持股情况。
+    2. 投资风格、经验、风险偏好。
+    3. 投资周期（长线/短线）。
+    4. 验证客户是否理解或掌握公司教授的投资方法（如战法、BS买卖点、步步高、周期共振等）。
+
+    如果判断为是，请回答'YES'并提供关键证据。如果不是，请回答'NO'。
+    通话记录：
+    ---
+    {transcript}
+    ---
+    """
 
 # 规则配置
 DETECTION_RULES = {
@@ -96,7 +220,7 @@ DETECTION_RULES = {
         },
         "time_notice": {
             "keywords": [
-                "耽误您", "占用您", "打扰您", "几分钟", "两分钟", "三分钟", 
+                "耽误您", "占用您", "打扰您", "几分钟", "两分钟", "三分钟",
                 "一会儿", "不会太久", "不耽误您时间", "简单说两句", "占用您一点时间", "一分钟/片刻/稍微", "很快"
             ],
             "patterns": [
@@ -114,7 +238,7 @@ DETECTION_RULES = {
             "patterns": [
                 r"腾讯.{0,5}投资.{0,5}(的|上市|公司)",
                 r"(腾讯|互联网|大型|知名).{0,6}(投资|背景|背书|平台)",
-                r"(上市|知名|大型).{0,5}公司"
+                r"(知名|大型).{0,5}公司"
             ]
         },
         "free_teach": {
@@ -132,7 +256,7 @@ DETECTION_RULES = {
     "deduction": {
         "bs_explained": {
             "keywords": [
-                "B点", "S点", "买卖点", "操盘线", "趋势信号", "买入信号", 
+                "B点", "S点", "买卖点", "操盘线", "趋势信号", "买入信号",
                 "卖出信号", "买点", "卖点", "BS点", "趋势指标", "交易信号"
             ],
             "patterns": [

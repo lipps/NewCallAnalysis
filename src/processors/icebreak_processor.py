@@ -232,7 +232,20 @@ class IcebreakProcessor:
     def _parse_llm_response(self, response: str, point: str) -> Dict[str, Any]:
         """解析LLM响应"""
         
+        # 增强的无效证据模式
+        invalid_evidence_patterns = [
+            r"无.*证据",
+            r"无符合要求",
+            r"不存在.*证据",
+            r"无法.*提供",
+            r"没有.*原文",
+            r"未找到.*片段"
+        ]
+        
         try:
+            if not response:
+                return {'hit': False, 'confidence': 0.0, 'evidence': '', 'reasoning': '空响应'}
+
             lines = response.strip().split('\n')
             result = {'hit': False, 'confidence': 0.0, 'evidence': '', 'reasoning': ''}
             
@@ -254,9 +267,29 @@ class IcebreakProcessor:
                     except:
                         result['confidence'] = 0.5
                 elif line.startswith('证据片段：') or line.startswith('证据片段:'):
-                    result['evidence'] = line.split('：', 1)[-1].split(':', 1)[-1].strip()
+                    evidence = line.split('：', 1)[-1].split(':', 1)[-1].strip()
+                    # 检查证据是否有效
+                    if any(re.search(pattern, evidence, re.IGNORECASE) for pattern in invalid_evidence_patterns):
+                        result['hit'] = False
+                        result['confidence'] = 0.0
+                        result['evidence'] = ''
+                    else:
+                        result['evidence'] = evidence
                 elif line.startswith('理由：') or line.startswith('理由:'):
                     result['reasoning'] = line.split('：', 1)[-1].split(':', 1)[-1].strip()
+            
+            # 额外的无效证据检查
+            if result['evidence']:
+                invalid_tokens = {
+                    "无", "n/a", "na", "未知", "none", "null",
+                    "不适用", "无证据", "无法提供", "空", "不可用",
+                    "not applicable", "no evidence"
+                }
+                if (result['evidence'].lower() in invalid_tokens or 
+                    any(re.search(pattern, result['evidence'], re.IGNORECASE) for pattern in invalid_evidence_patterns)):
+                    result['hit'] = False
+                    result['confidence'] = 0.0
+                    result['evidence'] = ''
             
             return result
             

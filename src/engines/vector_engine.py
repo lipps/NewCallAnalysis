@@ -249,7 +249,7 @@ class VectorSearchEngine:
                 "text": "咱们来看看您持有的这只股票，我给您具体分析一下",
                 "category": "deduction",
                 "point": "customer_stock_explained",
-                "examples": ["您的股票", "持仓分析", "具体股票", "您关注的"]
+                "examples": ["演绎您的股票", "持仓分析", "具体股票", "您关注的"]
             }
         ]
         
@@ -307,8 +307,73 @@ class VectorSearchEngine:
                             query: str,
                             text: str,
                             category: str = None,
-                            top_k: int = 8,
-                            similarity_threshold: float = 0.6) -> Optional[Dict[str, Any]]:
+                            top_k: int = 5,
+                            similarity_threshold: float = 0.5) -> Optional[Dict[str, Any]]:
+        """搜索相似文档"""
+        
+        try:
+            # 检查缓存
+            cache_key = f"{query}_{text}_{category}"
+            if cache_key in self.search_cache:
+                return self.search_cache[cache_key]
+            
+            # 组合查询文本
+            search_text = f"{query} {text}"
+            
+            # 生成查询embedding
+            query_embedding = await self._generate_embeddings([search_text])
+            
+            # 构建查询条件
+            where_clause = {}
+            if category:
+                where_clause["category"] = category
+            
+            # 执行向量检索
+            results = self.collection.query(
+                query_embeddings=query_embedding.tolist(),
+                n_results=top_k,
+                where=where_clause if where_clause else None,
+                include=["documents", "metadatas", "distances"]
+            )
+            
+            if not results["documents"] or not results["documents"][0]:
+                return None
+            
+            # 处理结果
+            best_result = None
+            best_similarity = 0.0
+            
+            for i, (doc, metadata, distance) in enumerate(zip(
+                results["documents"][0],
+                results["metadatas"][0], 
+                results["distances"][0]
+            )):
+                # 转换距离为相似度 (Chroma使用L2距离，需要转换)
+                similarity = max(0.0, 1.0 - distance / 2.0)
+                
+                if similarity > similarity_threshold and similarity > best_similarity:
+                    best_similarity = similarity
+                    best_result = {
+                        "document": doc,
+                        "similarity": similarity,
+                        "category": metadata.get("category"),
+                        "point": metadata.get("point"),
+                        "examples": metadata.get("examples")
+                    }
+            
+            # 添加到缓存
+            if len(self.search_cache) >= self.cache_size_limit:
+                # 删除最旧的缓存项
+                oldest_key = next(iter(self.search_cache))
+                del self.search_cache[oldest_key]
+            
+            self.search_cache[cache_key] = best_result
+            
+            return best_result
+            
+        except Exception as e:
+            logger.error(f"向量检索失败: {e}")
+            return None
         """搜索相似文档"""
         
         try:

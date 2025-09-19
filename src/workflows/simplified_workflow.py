@@ -11,6 +11,8 @@ from ..processors.deduction_processor import DeductionProcessor
 from ..processors.process_processor import ProcessProcessor
 from ..processors.customer_processor import CustomerProcessor
 from ..processors.action_processor import ActionProcessor
+from ..processors.customer_probing_processor import CustomerProbingProcessor
+from ..processors.pain_point_processor import PainPointProcessor
 from ..engines.vector_engine import VectorSearchEngine
 from ..engines.rule_engine import RuleEngine
 from ..engines.llm_engine import LLMEngine
@@ -38,6 +40,8 @@ class SimpleCallAnalysisWorkflow:
         self.process_processor = ProcessProcessor()
         self.customer_processor = CustomerProcessor(llm_engine)
         self.action_processor = ActionProcessor()
+        self.customer_probing_processor = CustomerProbingProcessor(llm_engine)
+        self.pain_point_processor = PainPointProcessor(vector_engine, rule_engine, llm_engine)
     
     async def execute(self, 
                      call_input: CallInput, 
@@ -101,7 +105,25 @@ class SimpleCallAnalysisWorkflow:
             execution_times["action_analysis"] = asyncio.get_event_loop().time() - start_time
             logger.info(f"动作分析完成: {call_input.call_id}")
             
-            # 7. 结果聚合
+            # 7. 客户情况考察分析
+            start_time = asyncio.get_event_loop().time()
+            logger.info(f"开始客户情况考察分析: {call_input.call_id}")
+            customer_probing_result = await self.customer_probing_processor.analyze(
+                processed_text, config
+            )
+            execution_times["customer_probing_analysis"] = asyncio.get_event_loop().time() - start_time
+            logger.info(f"客户情况考察分析完成: {call_input.call_id}")
+            
+            # 8. 痛点量化分析
+            start_time = asyncio.get_event_loop().time()
+            logger.info(f"开始痛点量化分析: {call_input.call_id}")
+            pain_point_result = await self.pain_point_processor.analyze(
+                processed_text, config
+            )
+            execution_times["pain_point_analysis"] = asyncio.get_event_loop().time() - start_time
+            logger.info(f"痛点量化分析完成: {call_input.call_id}")
+            
+            # 9. 结果聚合
             confidence_score = self._calculate_confidence(
                 icebreak_result, deduction_result
             )
@@ -119,9 +141,10 @@ class SimpleCallAnalysisWorkflow:
                 process=process_result,
                 customer=customer_result,
                 actions=action_result,
+                customer_probing=customer_probing_result,
+                pain_point_quantification=pain_point_result,
                 
                 confidence_score=confidence_score,
-                execution_time=execution_times,
                 model_version="1.0.0"
             )
             
@@ -175,8 +198,15 @@ class SimpleCallAnalysisWorkflow:
             if isinstance(result, Exception):
                 logger.error(f"批量处理第{i}个任务失败: {result}")
                 # 创建错误结果
+                from ..models.schemas import IcebreakModel, DeductionModel, ProcessModel, CustomerModel, ActionsModel, CustomerProbingModel
                 error_result = CallAnalysisResult(
                     call_id=inputs[i].call_id,
+                    icebreak=IcebreakModel(),
+                    演绎=DeductionModel(),
+                    process=ProcessModel(),
+                    customer=CustomerModel(),
+                    actions=ActionsModel(),
+                    customer_probing=CustomerProbingModel(),
                     confidence_score=0.0,
                     model_version="1.0.0"
                 )

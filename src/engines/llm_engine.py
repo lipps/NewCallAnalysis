@@ -39,7 +39,7 @@ class LLMEngine:
         self.client = AsyncOpenAI(
             api_key=self.api_key,
             base_url=self.base_url,
-            timeout=60.0  # 设置60秒超时
+            timeout=180.0  # 增加到3分钟超时
         )
         
         # 请求统计
@@ -49,7 +49,7 @@ class LLMEngine:
         
         # 请求队列和限流
         self.request_queue = asyncio.Queue()
-        self.rate_limiter = asyncio.Semaphore(2)  # 最大并发请求数（降低并发以减少拥堵）
+        self.rate_limiter = asyncio.Semaphore(1)  # 降低并发到1，避免API限流
         
     async def generate(self,
                       prompt: str,

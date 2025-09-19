@@ -1,0 +1,32 @@
+[
+    {
+        "call_id": "test_loss_pain_001",
+        "transcript": "销售：您好，请问您平时有做股票投资吗？\n客户：做啊，但是亏得很惨。去年亏了30多万，都不敢告诉家人。\n销售：确实，很多投资者都有这种经历。您主要是什么原因亏损的？\n客户：主要是追高买入，看到股票涨就赶紧买，结果都是在高位接盘。然后一跌就恐慌，马上割肉出来。错过了很多翻倍的机会，像茅台、腾讯这些我都提前卖了。",
+        "expected_pain_points": {
+            "loss": true,
+            "miss_opportunity": true,
+            "chase_high": true,
+            "panic_sell": true
+        }
+    },
+    {
+        "call_id": "test_no_pain_point_001",
+        "transcript": "销售：最近股市怎么样？\n客户：还不错，我的投资组合保持稳定，没有太大波动。\n销售：那很好啊，稳定是投资的基础。\n客户：是的，我比较谨慎，不喜欢冒险。",
+        "expected_pain_points": {
+            "loss": false,
+            "miss_opportunity": false,
+            "chase_high": false,
+            "panic_sell": false
+        }
+    },
+    {
+        "call_id": "test_multiple_pain_points_001",
+        "transcript": "销售：听说您最近在股市遇到一些困难？\n客户：是啊，真是太难了。我去年炒股亏了50万，错过了腾讯的大涨，现在还在追高买股票。每次看到上涨就买，结果都是在高位接盘，然后一跌就恐慌性卖出。真的很后悔没有及时止损。\n销售：这确实是很多投资者的共同困扰。\n客户：是啊，感觉自己就像韭菜一样被割。",
+        "expected_pain_points": {
+            "loss": true,
+            "miss_opportunity": true,
+            "chase_high": true,
+            "panic_sell": true
+        }
+    }
+]

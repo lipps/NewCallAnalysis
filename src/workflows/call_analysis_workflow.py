@@ -16,6 +16,7 @@ from ..processors.deduction_processor import DeductionProcessor
 from ..processors.process_processor import ProcessProcessor
 from ..processors.customer_processor import CustomerProcessor
 from ..processors.action_processor import ActionProcessor
+from ..processors.customer_probing_processor import CustomerProbingProcessor
 from ..engines.vector_engine import VectorSearchEngine
 from ..engines.rule_engine import RuleEngine
 from ..engines.llm_engine import LLMEngine
@@ -36,6 +37,7 @@ class WorkflowState(BaseModel):
     process_result: Optional[Dict[str, Any]] = None
     customer_result: Optional[Dict[str, Any]] = None
     action_result: Optional[Dict[str, Any]] = None
+    customer_probing_result: Optional[Dict[str, Any]] = None
     
     # 最终结果
     final_result: Optional[CallAnalysisResult] = None
@@ -64,6 +66,7 @@ class CallAnalysisWorkflow:
         self.process_processor = ProcessProcessor()
         self.customer_processor = CustomerProcessor(llm_engine)
         self.action_processor = ActionProcessor()
+        self.customer_probing_processor = CustomerProbingProcessor(llm_engine)
         
         # 创建工作流图
         self.workflow = self._create_workflow()
@@ -79,6 +82,7 @@ class CallAnalysisWorkflow:
         workflow.add_node("deduction_analysis", self._deduction_analysis_node)
         workflow.add_node("process_analysis", self._process_analysis_node)
         workflow.add_node("customer_analysis", self._customer_analysis_node)
+        workflow.add_node("customer_probing_analysis", self._customer_probing_analysis_node)
         workflow.add_node("action_analysis", self._action_analysis_node)
         workflow.add_node("result_aggregation", self._result_aggregation_node)
         
@@ -90,7 +94,8 @@ class CallAnalysisWorkflow:
         workflow.add_edge("icebreak_analysis", "deduction_analysis")
         workflow.add_edge("deduction_analysis", "process_analysis")
         workflow.add_edge("process_analysis", "customer_analysis")
-        workflow.add_edge("customer_analysis", "action_analysis")
+        workflow.add_edge("customer_analysis", "customer_probing_analysis")
+        workflow.add_edge("customer_probing_analysis", "action_analysis")
         workflow.add_edge("action_analysis", "result_aggregation")
         
         # 结束
@@ -248,6 +253,35 @@ class CallAnalysisWorkflow:
             state.execution_time["customer_analysis"] = end_time - start_time
             
         return state
+
+    async def _customer_probing_analysis_node(self, state: WorkflowState) -> WorkflowState:
+        """客户情况考察分析节点"""
+        start_time = asyncio.get_event_loop().time()
+        
+        try:
+            if state.processed_text is None:
+                raise ValueError("需要先完成文本预处理")
+                
+            logger.info(f"开始客户情况考察分析: {state.call_input.call_id}")
+            
+            customer_probing_result = await self.customer_probing_processor.analyze(
+                state.processed_text,
+                state.config
+            )
+            
+            state.customer_probing_result = customer_probing_result
+            
+            logger.info(f"客户情况考察分析完成: {state.call_input.call_id}")
+            
+        except Exception as e:
+            logger.error(f"客户情况考察分析失败: {e}")
+            state.errors.append(f"客户情况考察分析失败: {str(e)}")
+            
+        finally:
+            end_time = asyncio.get_event_loop().time()
+            state.execution_time["customer_probing_analysis"] = end_time - start_time
+            
+        return state
     
     async def _action_analysis_node(self, state: WorkflowState) -> WorkflowState:
         """动作分析节点"""
@@ -299,6 +333,7 @@ class CallAnalysisWorkflow:
                 process=state.process_result or {},
                 customer=state.customer_result or {},
                 actions=state.action_result or {},
+                customer_probing=state.customer_probing_result or {},
                 
                 analysis_timestamp=datetime.now().isoformat(),
                 model_version="1.0",
