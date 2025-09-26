@@ -1,0 +1,502 @@
+{
+  "source_filename": "王康泽2020716056.txt",
+  "analysis_results": [
+    {
+      "call_id": "王康泽2020716056",
+      "customer_id": "",
+      "sales_id": "",
+      "call_time": "2025-09-23T17:08:15.807889",
+      "icebreak": {
+        "professional_identity": {
+          "hit": true,
+          "evidence": "王康泽 2025年09月01日 唉徐先生您好，的高级专业小王，这边给您来电话呢是给您做个回访的",
+          "confidence": 0.6494505494505496,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.46153846153846156,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.9,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.6494505494505496,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        },
+        "value_help": {
+          "hit": false,
+          "evidence": "王康泽 2025年09月01日 那首先呢我们25号呢看到了25号对吧？出现了B点买点到今天呢赚了15个点，看到吧？",
+          "confidence": 0.4651260504201681,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.1764705882352941,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.85,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.4651260504201681,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        },
+        "time_notice": {
+          "hit": false,
+          "evidence": "王康泽 2025年09月01日 手机是吧？那您这边的话把咱们一门操盘手打开一下，我花两分钟帮您调一下。",
+          "confidence": 0.5626373626373626,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.3846153846153846,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.5626373626373626,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        },
+        "company_background": {
+          "hit": false,
+          "evidence": "",
+          "confidence": 0.0,
+          "evidence_source": "none",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.0,
+            "threshold": 0.6,
+            "contributors": []
+          }
+        },
+        "free_teach": {
+          "hit": false,
+          "evidence": "\"公司为了回馈老用户，呢免费的给您开通了主力资金监控，还有智能买卖点提示\"",
+          "confidence": 0.47857142857142854,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.125,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.95,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.47857142857142854,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        },
+        "refuse_reason": "",
+        "refuse_recover_count": 0,
+        "next_appointment": true,
+        "rejection_reasons": [],
+        "handling_strategies": [],
+        "handle_objection_count": 0,
+        "rejection_kpi": {
+          "total": 0,
+          "by_type": [
+            {
+              "type": "无需求/已解决",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "忙没空/时间冲突",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "不信任/警惕",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "情绪负向/抱怨/要投诉",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "已卸载/不再使用产品",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "要求改为其他渠道（加微信/发资料/邮件）",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "价格/费用顾虑",
+              "count": 0,
+              "ratio": 0.0
+            }
+          ]
+        },
+        "handling_kpi": {
+          "total": 0,
+          "by_strategy": [
+            {
+              "strategy": "共情/确认",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "需求确认/提问",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "价值重申",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "备选时间",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "社会证明",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "改约渠道",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "继续推进/成交请求",
+              "count": 0,
+              "ratio": 0.0
+            }
+          ]
+        }
+      },
+      "演绎": {
+        "bs_explained": {
+          "hit": true,
+          "evidence": "针那边呢给你三把锁了，对不对？建议你买入了，我们家这边呢也给B点建议你买入了， 客户 2025年09月01日  嗯 客户 2025年",
+          "confidence": 0.9249999999999999,
+          "evidence_source": "rule",
+          "signals": {}
+        },
+        "period_resonance_explained": {
+          "hit": false,
+          "evidence": "无",
+          "confidence": 0.0,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.0,
+            "threshold": 0.6,
+            "contributors": []
+          }
+        },
+        "control_funds_explained": {
+          "hit": true,
+          "evidence": "王康泽 2025年09月01日  绿色呢它代表的是空方主力...红线呢代表了多帮主力，红线向上意味着主力资金流入...红线向上啊上山黑色中轴意味着主力资金控盘了。",
+          "confidence": 0.95,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.95,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.95,
+            "threshold": 0.6,
+            "contributors": [
+              "llm"
+            ]
+          }
+        },
+        "bubugao_explained": {
+          "hit": false,
+          "evidence": "的时候，呢你看一眼，如果说他在最下面蓝色海面线之下，这支票放掉， 客户 2025年09",
+          "confidence": 0.16666666666666666,
+          "evidence_source": "rule",
+          "signals": {
+            "rule_confidence": 0.16666666666666666,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.16666666666666666,
+            "threshold": 0.6,
+            "contributors": [
+              "rule"
+            ]
+          }
+        },
+        "value_quantify_explained": {
+          "hit": false,
+          "evidence": "\"从4月份到现在9月份了，四五个月的时间，我们只操作了三次，但是呢前面26个点，这边15个点对吧？减掉三个点的话呢也是在38个点。1万块钱相当于3800块钱到手了，那如果10万资金38000到手了\"",
+          "confidence": 0.4000000000000001,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.1,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.4000000000000001,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        },
+        "customer_stock_explained": {
+          "hit": false,
+          "evidence": "客户提到“002989”，销售回应“002989中天精装是不是？”，并分析其K线走势、买卖点信号（如“8月25号的时候，我们给出了第一点信号买一点”）、资金流向（“红线向上意味着主力资金流入”）和持仓建议。",
+          "confidence": 0.4714285714285715,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.1875,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.85,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.4714285714285715,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        }
+      },
+      "process": {
+        "explain_duration_min": 0.5,
+        "interaction_rounds_per_min": 0.0,
+        "deal_or_visit": true,
+        "total_words": 20107,
+        "sales_words": 20107,
+        "customer_words": 0,
+        "money_ask_count": 1,
+        "money_ask_quotes": [
+          "客户 2025年09月01日  喂 王康泽 2025年09月01日  喂你好，这边是施文云施先生吗？ 客户 2025年09月01日  嗯 客户 2025年09月01日  对，什么事？ 王康泽 2025年09月01日  唉徐先生您好，的高级专..."
+        ]
+      },
+      "customer": {
+        "summary": "无客户对话内容",
+        "questions": [],
+        "value_recognition": "不明",
+        "attitude_score": 0.0
+      },
+      "actions": {
+        "professional_identity": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "王康泽 2025年09月01日 唉徐先生您好，的高级专业小王，这边给您来电话呢是给您做个回访的"
+          ]
+        },
+        "value_help": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "王康泽 2025年09月01日 那首先呢我们25号呢看到了25号对吧？出现了B点买点到今天呢赚了15个点，看到吧？"
+          ]
+        },
+        "time_notice": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "王康泽 2025年09月01日 手机是吧？那您这边的话把咱们一门操盘手打开一下，我花两分钟帮您调一下。"
+          ]
+        },
+        "company_background": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": []
+        },
+        "free_teach": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "\"公司为了回馈老用户，呢免费的给您开通了主力资金监控，还有智能买卖点提示\""
+          ]
+        },
+        "bs_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "针那边呢给你三把锁了，对不对？建议你买入了，我们家这边呢也给B点建议你买入了， 客户 2025年09月01日  嗯 客户 2025年"
+          ]
+        },
+        "period_resonance_explained": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "无"
+          ]
+        },
+        "control_funds_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "王康泽 2025年09月01日  绿色呢它代表的是空方主力...红线呢代表了多帮主力，红线向上意味着主力资金流入...红线向上啊上山黑色中轴意味着主力资金控盘了。"
+          ]
+        },
+        "bubugao_explained": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "的时候，呢你看一眼，如果说他在最下面蓝色海面线之下，这支票放掉， 客户 2025年09"
+          ]
+        },
+        "value_quantify_explained": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "\"从4月份到现在9月份了，四五个月的时间，我们只操作了三次，但是呢前面26个点，这边15个点对吧？减掉三个点的话呢也是在38个点。1万块钱相当于3800块钱到手了，那如果10万资金38000到手了\""
+          ]
+        },
+        "customer_stock_explained": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "客户提到“002989”，销售回应“002989中天精装是不是？”，并分析其K线走势、买卖点信号（如“8月25号的时候，我们给出了第一点信号买一点”）、资金流向（“红线向上意味着主力资金流入”）和持仓建议。"
+          ]
+        }
+      },
+      "customer_probing": {
+        "has_customer_probing": false,
+        "customer_probing_details": ""
+      },
+      "pain_point_quantification": {
+        "loss_pain": {
+          "pain_type": "亏损",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": 0.04,
+            "duration": null,
+            "severity_score": 6.0
+          },
+          "evidence_segments": [
+            "时候，它有一波洗盘，对吧？有一波洗盘的还亏了亏了三个点，对吧？这波你看又抓15个",
+            "噢31块的话现在是挣钱了的，那您之前是套牢的，对不对？ 客户 2025年09月",
+            "起来了，那如果说没有涨起来的话，你甚至是被套被套七个点八个点的。 客户 2025"
+          ],
+          "confidence": 0.9175,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 1.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.9,
+            "weighted_confidence": 0.9175
+          }
+        },
+        "miss_opportunity_pain": {
+          "pain_type": "踏空",
+          "detected": false,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [],
+          "confidence": 0.0,
+          "detection_source": "combined",
+          "signals": {
+            "rule_confidence": 0.0,
+            "quantification_score": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "weighted_confidence": 0.0
+          }
+        },
+        "chase_high_pain": {
+          "pain_type": "追高",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [
+            "们现在啊还有一个小黄灯的一个功能，是一个高位止盈的一个神器，他从1月份啊上线到现"
+          ],
+          "confidence": 0.76,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "weighted_confidence": 0.76
+          }
+        },
+        "panic_sell_pain": {
+          "pain_type": "割肉",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [
+            "15:47:37 那S点是我们最后的一个清仓位，懂吧，S点啊 客户 2025年0",
+            "\"那您之前是套牢的，对不对？\" \"对对。\" \"那其实啊你你可以自己关注的，啊在我们之前前面是不是S点，啊是不是我们一个蓝色持币阶段啊\" \"对吧？我们还选拔出来之后，呢所有的K线都是蓝色的，看到吗？不管是上涨的阴阳线还是下跌的阴线都是蓝色变光包裹的，这是咱们的一个蓝色持币区持币观望的区域，是不建议你买入的。\" \"对吧？那这是后续涨起来了，后续在8月25号的时候，甚至说这两天我们涨起来了，那如果说没有涨起来的话，你甚至是被套被套七个点八个"
+          ],
+          "confidence": 0.76,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "weighted_confidence": 0.76
+          }
+        },
+        "total_pain_score": 2.175,
+        "dominant_pain_type": "亏损",
+        "quantification_reliability": 0.28125
+      },
+      "analysis_timestamp": "2025-09-23T17:08:15.807896",
+      "model_version": "1.0.0",
+      "confidence_score": 0.460807329924977
+    }
+  ],
+  "result_count": 1,
+  "generated_at": "2025-09-23T17:08:15.809019"
+}

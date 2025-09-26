@@ -6,11 +6,14 @@ from fastapi.responses import JSONResponse
 from typing import List, Dict, Any, Optional
 import asyncio
 import uuid
+import json
 from datetime import datetime
+from pathlib import Path
 
 from ..models.schemas import (
-    CallInput, CallAnalysisResult, BatchAnalysisInput, 
-    AnalysisConfig, QualityMetrics
+    CallInput, CallAnalysisResult, BatchAnalysisInput,
+    AnalysisConfig, QualityMetrics, BatchFileProcessRequest,
+    BatchFileProcessResponse, ParsedFileInput, BatchProcessingConfig
 )
 from ..workflows.simplified_workflow import SimpleCallAnalysisWorkflow as CallAnalysisWorkflow
 from ..engines.vector_engine import get_vector_engine
@@ -18,6 +21,8 @@ from ..engines.rule_engine import RuleEngine
 from ..engines.llm_engine import get_llm_engine
 from ..config.settings import settings
 from ..utils.logger import get_logger
+from ..utils.batch_processor import get_batch_processor, get_result_storage
+from ..utils.file_parser import validate_file_batch
 
 logger = get_logger(__name__)
 
@@ -377,6 +382,190 @@ async def add_rule(
     except Exception as e:
         logger.error(f"添加规则失败: {e}")
         raise HTTPException(status_code=500, detail=f"添加失败: {str(e)}")
+
+
+# ========== 生产级批量文件处理接口 ==========
+
+@app.post("/analyze/batch/files", response_model=BatchFileProcessResponse)
+async def process_batch_files(
+    request: BatchFileProcessRequest,
+    workflow: CallAnalysisWorkflow = Depends(get_workflow)
+):
+    """
+    批量文件处理接口 - 生产级实现
+
+    支持多文件并发处理，具备完善的错误处理、进度跟踪和结果存储
+    """
+    try:
+        # 请求验证
+        if not request.files:
+            raise HTTPException(status_code=400, detail="文件列表不能为空")
+
+        # 配置验证
+        batch_config = BatchProcessingConfig()
+
+        # 验证文件批次
+        is_valid, validation_errors = validate_file_batch(request.files, batch_config)
+        if not is_valid:
+            raise HTTPException(
+                status_code=400,
+                detail=f"批次验证失败: {'; '.join(validation_errors)}"
+            )
+
+        logger.info(
+            f"开始处理批量文件请求: {request.batch_id}, "
+            f"文件数: {len(request.files)}, "
+            f"总通话数: {sum(len(f.calls) for f in request.files)}"
+        )
+
+        # 获取批量处理器
+        processor = await get_batch_processor(workflow, batch_config)
+
+        # 处理批量请求
+        response = await processor.process_batch(request)
+
+        logger.info(
+            f"批量处理完成: {request.batch_id}, "
+            f"状态: {response.status}, "
+            f"成功率: {response.statistics.overall_success_rate:.1%}"
+        )
+
+        return response
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"批量文件处理失败: {e}")
+        raise HTTPException(status_code=500, detail=f"处理失败: {str(e)}")
+
+
+@app.get("/analyze/batch/{batch_id}/status")
+async def get_batch_status(batch_id: str):
+    """
+    查询批次处理状态（异步处理时使用）
+    """
+    try:
+        storage = get_result_storage()
+
+        # 尝试读取批次结果
+        batch_dir = Path(storage.base_path) / batch_id
+        summary_path = batch_dir / "batch_summary.json"
+
+        if not summary_path.exists():
+            raise HTTPException(status_code=404, detail=f"批次 {batch_id} 不存在或尚未完成")
+
+        with open(summary_path, 'r', encoding='utf-8') as f:
+            batch_data = json.load(f)
+
+        return batch_data
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"查询批次状态失败: {e}")
+        raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
+
+
+@app.get("/analyze/batch/{batch_id}/download/{filename}")
+async def download_file_result(batch_id: str, filename: str):
+    """
+    下载单个文件的分析结果
+    """
+    try:
+        storage = get_result_storage()
+        batch_dir = Path(storage.base_path) / batch_id
+
+        # 查找匹配的结果文件
+        result_files = list(batch_dir.glob("*.analysis.json"))
+        target_file = None
+
+        for result_file in result_files:
+            with open(result_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if data.get('source_filename') == filename:
+                    target_file = result_file
+                    break
+
+        if not target_file:
+            raise HTTPException(
+                status_code=404,
+                detail=f"文件 {filename} 的分析结果不存在"
+            )
+
+        # 返回文件内容
+        with open(target_file, 'r', encoding='utf-8') as f:
+            content = json.load(f)
+
+        return content
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"下载文件结果失败: {e}")
+        raise HTTPException(status_code=500, detail=f"下载失败: {str(e)}")
+
+
+@app.delete("/analyze/batch/{batch_id}")
+async def cleanup_batch_results(batch_id: str):
+    """
+    清理批次结果（手动清理）
+    """
+    try:
+        storage = get_result_storage()
+        batch_dir = Path(storage.base_path) / batch_id
+
+        if not batch_dir.exists():
+            raise HTTPException(status_code=404, detail=f"批次 {batch_id} 不存在")
+
+        # 删除批次目录
+        import shutil
+        shutil.rmtree(batch_dir)
+
+        logger.info(f"已清理批次结果: {batch_id}")
+
+        return {"message": f"批次 {batch_id} 结果已清理"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"清理批次结果失败: {e}")
+        raise HTTPException(status_code=500, detail=f"清理失败: {str(e)}")
+
+
+@app.get("/analyze/batch/config")
+async def get_batch_config():
+    """
+    获取批量处理配置信息
+    """
+    config = BatchProcessingConfig()
+    return {
+        "config": config.dict(),
+        "supported_file_types": [".json", ".jsonl", ".csv", ".txt"],
+        "limits": {
+            "max_files_per_batch": config.max_files_per_batch,
+            "max_calls_per_batch": config.max_calls_per_batch,
+            "max_file_size_mb": config.max_file_size_mb,
+            "max_concurrent_files": config.max_concurrent_files
+        }
+    }
+
+
+@app.post("/analyze/batch/cleanup-expired")
+async def cleanup_expired_batches():
+    """
+    清理过期的批次结果（定时任务接口）
+    """
+    try:
+        storage = get_result_storage()
+        config = BatchProcessingConfig()
+
+        storage.cleanup_expired_results(config.result_retention_hours)
+
+        return {"message": "过期批次清理完成"}
+
+    except Exception as e:
+        logger.error(f"清理过期批次失败: {e}")
+        raise HTTPException(status_code=500, detail=f"清理失败: {str(e)}")
 
 
 if __name__ == "__main__":

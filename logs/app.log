@@ -5240,6 +5240,3 @@ customer_probing
 2025-09-19 16:46:40 | INFO | src.engines.rule_engine:56 | 规则引擎初始化完成，共编译了 170 条规则
 2025-09-19 16:46:40 | INFO | src.api.main:63 | 工作流实例已创建
 2025-09-19 16:46:40 | INFO | src.api.main:76 | 应用启动完成
-2025-09-19 18:07:57 | INFO | src.api.main:85 | 应用正在关闭...
-2025-09-19 18:07:57 | INFO | src.engines.vector_engine:526 | 向量检索引擎已关闭
-2025-09-19 18:07:57 | INFO | src.api.main:91 | 应用关闭完成

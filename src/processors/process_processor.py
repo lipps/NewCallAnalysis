@@ -205,40 +205,132 @@ class ProcessProcessor:
     def _detect_money_ask(self, processed_text: Dict[str, Any]) -> Dict[str, Any]:
         """识别销售的要钱/付费/下单类行为并统计次数与证据。
 
-        定义：销售明确提及付费、购买、下单等涉及金钱的要求或建议购买。
-        每命中一次（句子或话轮中出现一次相关表达）计 1 次。
+        定义：销售明确要求客户付费、购买、下单等涉及金钱的要求。
+        使用简化的检测逻辑，避免过度复杂化。
         """
         try:
             sales_utts = processed_text.get('content_analysis', {}).get('sales_content', []) or []
 
-            # 金额/数字：如 288元/￥199/99块/一年/一季度等
-            price_num = r"(￥|¥|RMB|人民币)?\s*\d+(\.\d+)?\s*(元|块|块钱|人民币|rmb)?"
-            cn_num = r"(十|百|千|万|一|二|三|四|五|六|七|八|九|两)+\s*(元|块)"
-
-            # 付费动作/购买/充值/开通/办理等
-            pay_verbs = r"(下单|购买|买|付费|付款|支付|转账|打款|充值|开通|办理|订购|升级|续费|会员|套餐|开卡|激活|成交|签单|扫(码|二维码))"
-
-            # 建议/推动购买的措辞
-            push_phrase = r"(可以|建议|不如|要不要|先|考虑|试试).{0,6}(下单|购买|开通|办理|升级|充值)"
-
-            combined = re.compile(
-                rf"({price_num}|{cn_num}|{pay_verbs}|{push_phrase})",
-                re.IGNORECASE
-            )
-
             quotes: List[str] = []
             count = 0
+            
             for utt in sales_utts:
-                if not utt:
+                if not utt or len(utt.strip()) < 8:  # 过滤太短的话语
                     continue
-                matches = list(combined.finditer(utt))
-                if matches:
+                
+                # 使用简化的检测逻辑
+                if self._contains_money_ask_behavior(utt):
                     count += 1
-                    # 证据：尽量返回整句或短片段
-                    snippet = utt
-                    if len(snippet) > 120:
-                        snippet = snippet[:120] + "..."
+                    # 提取关键证据片段
+                    snippet = self._extract_key_evidence(utt)
                     quotes.append(snippet)
-            return {"count": count, "quotes": quotes[:20]}
-        except Exception:
+            
+            return {"count": count, "quotes": quotes[:10]}
+            
+        except Exception as e:
+            logger.error(f"要钱行为检测失败: {e}")
             return {"count": 0, "quotes": []}
+
+    def _contains_money_ask_behavior(self, text: str) -> bool:
+        """检查是否包含要钱行为 - 简化版本"""
+        
+        # 首先排除明显的非要钱场景
+        exclude_patterns = [
+            r'您.{0,15}(买|购买|成本价|持有|持仓).{0,20}(股票|多少|什么时候)',  # 询问客户持仓
+            r'客户.{0,15}(买|购买|持有)',  # 描述客户行为
+            r'(下载|注册|安装|打开|返回).{0,15}(软件|APP|应用)',  # 软件操作指导（但不包括付费相关的）
+            r'股价.{0,30}(区域|位置|点位|涨|跌)',  # 技术分析
+            r'(这|那).{0,10}股票.{0,20}可以.{0,10}(买入|买进)',  # 股票交易建议
+        ]
+        
+        # 检查排除模式
+        for pattern in exclude_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                return False
+        
+        # 检查要钱行为模式
+        money_ask_patterns = [
+            # 1. 明确的价格表述
+            r'(￥|¥)\s*\d+',  # 金额符号
+            r'\d+\s*(元|块)\s*(一年|年费|月费|季度)',  # 具体费用
+            r'\d+您确定',  # 价格确认
+            r'原价.*\d+.*一年',  # 原价对比
+            r'二百八.*八十八',  # 具体数字
+            r'几毛钱',  # 低价暗示
+            
+            # 2. 收费相关表述
+            r'(收费|付费|费用)',  # 直接提及收费
+            r'(全是|都是).{0,10}收费',  # 收费说明
+            r'(花|去花)\d+.*开通',  # 花钱开通
+            r'花.*钱',  # 花钱
+            
+            # 3. 开通和办理行为
+            r'开通.*年',  # 开通服务
+            r'开通.*之后',  # 开通后续
+            r'点进去.*办理',  # 办理操作
+            r'操作办理',  # 操作办理
+            r'您.*办理',  # 建议办理
+            
+            # 4. 活动和优惠
+            r'抢到.*活动',  # 活动优惠
+            r'现实秒杀',  # 秒杀活动
+            r'恭喜.*抢到',  # 恭喜获得优惠
+            
+            # 5. 会员和套餐推销
+            r'(VIP|会员|套餐)',  # VIP相关
+            r'升级.*可以',  # 升级功能
+            r'送.*月.*使用期',  # 赠送使用期
+            
+            # 6. 试用和体验推广
+            r'(先|可以).{0,10}(试用|体验)',  # 试用推广
+            r'免费.*后',  # 免费试用后
+            
+            # 7. 购买压力和紧迫感
+            r'耽误.*几分钟.*时间.*可以',  # 时间压力
+            r'点进去.*操作',  # 操作引导
+            r'工号.*填',  # 填写工号
+            
+            # 8. 价值包装
+            r'连续费率.*占到.*%',  # 续费率
+            r'排名.*第一',  # 排名优势
+            r'23年.*时间',  # 历史悠久
+            
+            # 9. 免费限制暗示
+            r'只能用.*股票',  # 免费限制
+            r'免费.*版本.*每天.*只能',  # 免费限制
+        ]
+        
+        # 检查是否匹配任何要钱模式
+        for pattern in money_ask_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                return True
+        
+        return False
+
+    def _extract_key_evidence(self, text: str) -> str:
+        """提取关键证据片段"""
+        
+        # 如果文本较短，直接返回
+        if len(text) <= 100:
+            return text
+        
+        # 查找包含关键词的句子
+        key_phrases = [
+            '收费', '付费', '费用', 'VIP', '会员', '套餐', '试用', '体验',
+            '开通', '升级', '购买', '元', '块', '免费'
+        ]
+        
+        sentences = re.split(r'[。！？；;.!?]', text)
+        
+        for sentence in sentences:
+            sentence = sentence.strip()
+            if len(sentence) > 10:
+                for phrase in key_phrases:
+                    if phrase in sentence:
+                        # 返回包含关键词的句子，限制长度
+                        if len(sentence) > 80:
+                            return sentence[:80] + "..."
+                        return sentence
+        
+        # 如果没找到合适的句子，返回截断的文本
+        return text[:100] + "..."

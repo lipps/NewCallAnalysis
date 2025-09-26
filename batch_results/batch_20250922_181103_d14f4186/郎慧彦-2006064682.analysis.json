@@ -1,0 +1,480 @@
+{
+  "source_filename": "郎慧彦-2006064682.txt",
+  "analysis_results": [
+    {
+      "call_id": "郎慧彦-2006064682",
+      "customer_id": "",
+      "sales_id": "",
+      "call_time": "2025-09-22T18:14:51.123539",
+      "icebreak": {
+        "professional_identity": {
+          "hit": false,
+          "evidence": "郎慧彦 2025年09月08日 唉你好，大哥，你现在的话在电脑旁边吗？你可以打开咱们益盟操软件，呀",
+          "confidence": 0.539010989010989,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.23076923076923078,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.95,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.539010989010989,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        },
+        "value_help": {
+          "hit": true,
+          "evidence": "8日  对吧？然后您这边正好扫码支付好之后，我帮您把软件功能带您激活一下，你就可以直接去使用了，大哥。 客户 2025年09月08日  客户 2025年",
+          "confidence": 0.8058823529411764,
+          "evidence_source": "rule",
+          "signals": {}
+        },
+        "time_notice": {
+          "hit": true,
+          "evidence": "日  啊有。 客户 2025年09月08日  由用户之家个股三分钟， 郎慧彦 2025年09月08日  用户之前。 客户 20",
+          "confidence": 0.8038461538461538,
+          "evidence_source": "rule",
+          "signals": {}
+        },
+        "company_background": {
+          "hit": false,
+          "evidence": "",
+          "confidence": 0.0,
+          "evidence_source": "none",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.0,
+            "threshold": 0.6,
+            "contributors": []
+          }
+        },
+        "free_teach": {
+          "hit": false,
+          "evidence": "",
+          "confidence": 0.0,
+          "evidence_source": "none",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.0,
+            "threshold": 0.6,
+            "contributors": []
+          }
+        },
+        "refuse_reason": "",
+        "refuse_recover_count": 0,
+        "next_appointment": true,
+        "rejection_reasons": [],
+        "handling_strategies": [],
+        "handle_objection_count": 0,
+        "rejection_kpi": {
+          "total": 0,
+          "by_type": [
+            {
+              "type": "无需求/已解决",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "忙没空/时间冲突",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "不信任/警惕",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "情绪负向/抱怨/要投诉",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "已卸载/不再使用产品",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "要求改为其他渠道（加微信/发资料/邮件）",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "价格/费用顾虑",
+              "count": 0,
+              "ratio": 0.0
+            }
+          ]
+        },
+        "handling_kpi": {
+          "total": 0,
+          "by_strategy": [
+            {
+              "strategy": "共情/确认",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "需求确认/提问",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "价值重申",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "备选时间",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "社会证明",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "改约渠道",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "继续推进/成交请求",
+              "count": 0,
+              "ratio": 0.0
+            }
+          ]
+        }
+      },
+      "演绎": {
+        "bs_explained": {
+          "hit": true,
+          "evidence": "，这个是可以理解的，哈对吧？唉那我们再来看一下，哈你看他其实B点买入先卖出，它没有任何问题，它就是一个买卖点。 客户 2025年09月08日  嗯 客户 2025年0",
+          "confidence": 1.0,
+          "evidence_source": "rule",
+          "signals": {}
+        },
+        "period_resonance_explained": {
+          "hit": true,
+          "evidence": "月08日  红色背景的话，代表这个股票在周线上它是走好的，那如果说这个股票在周线上走",
+          "confidence": 0.6,
+          "evidence_source": "rule",
+          "signals": {
+            "rule_confidence": 0.3214285714285714,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.6,
+            "threshold": 0.6,
+            "contributors": [
+              "rule"
+            ]
+          }
+        },
+        "control_funds_explained": {
+          "hit": true,
+          "evidence": "话，它是给我们去监测这个股票里面的，呃就是大资金啊公募私募啊机构这一类的资金有没有在操作的？ 郎慧彦 2025年09月08日  那红色面",
+          "confidence": 0.8157142857142857,
+          "evidence_source": "rule",
+          "signals": {
+            "rule_confidence": 0.7899999999999999,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.85,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.8157142857142857,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        },
+        "bubugao_explained": {
+          "hit": true,
+          "evidence": "是BS点主力进出龙头活跃，还有龙头四海，还有我们那个控盘资金步步高，这些指标你都可以直接去使用了。 郎慧彦 2025年09月08日  软",
+          "confidence": 0.8000000000000002,
+          "evidence_source": "rule",
+          "signals": {
+            "rule_confidence": 0.7999999999999999,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.8000000000000002,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        },
+        "value_quantify_explained": {
+          "hit": false,
+          "evidence": "郎慧彦 2025年09月08日 你看一下它这个涨跌幅是不是67.06%啊这个波段的？……1万块钱进去的话补多少的话应该也有6000多块钱了，吧插头去位是不是6000块钱左右肯定有了，吧是不是？",
+          "confidence": 0.4000000000000001,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.1,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.4000000000000001,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        },
+        "customer_stock_explained": {
+          "hit": true,
+          "evidence": "郎慧彦 2025年09月08日 英威城对吧？客户 2025年09月08日 对。郎慧彦 2025年09月08日 一个一个买一个卖这个买。郎慧彦 2025年09月08日 这个这个股票什么时候买的，呀那个吧套着呢大概买的嗯是近期买的套的还是很早很早之前买的套的，呀也了，吧",
+          "confidence": 0.6952380952380953,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.5791666666666666,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.85,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.6952380952380953,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        }
+      },
+      "process": {
+        "explain_duration_min": 0.5,
+        "interaction_rounds_per_min": 0.0,
+        "deal_or_visit": true,
+        "total_words": 34392,
+        "sales_words": 34392,
+        "customer_words": 0,
+        "money_ask_count": 1,
+        "money_ask_quotes": [
+          "郎慧彦 2025年09月08日  喂你好。 客户 2025年09月08日  唉你好你好。 郎慧彦 2025年09月08日  唉你好，大哥，你现在的话在电脑旁边吗？你可以打开咱们益盟操软件，呀 客户 2025年09月08日  对，我下载了，然..."
+        ]
+      },
+      "customer": {
+        "summary": "无客户对话内容",
+        "questions": [],
+        "value_recognition": "不明",
+        "attitude_score": 0.0
+      },
+      "actions": {
+        "professional_identity": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "郎慧彦 2025年09月08日 唉你好，大哥，你现在的话在电脑旁边吗？你可以打开咱们益盟操软件，呀"
+          ]
+        },
+        "value_help": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "8日  对吧？然后您这边正好扫码支付好之后，我帮您把软件功能带您激活一下，你就可以直接去使用了，大哥。 客户 2025年09月08日  客户 2025年"
+          ]
+        },
+        "time_notice": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "日  啊有。 客户 2025年09月08日  由用户之家个股三分钟， 郎慧彦 2025年09月08日  用户之前。 客户 20"
+          ]
+        },
+        "company_background": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": []
+        },
+        "free_teach": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": []
+        },
+        "bs_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "，这个是可以理解的，哈对吧？唉那我们再来看一下，哈你看他其实B点买入先卖出，它没有任何问题，它就是一个买卖点。 客户 2025年09月08日  嗯 客户 2025年0"
+          ]
+        },
+        "period_resonance_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "月08日  红色背景的话，代表这个股票在周线上它是走好的，那如果说这个股票在周线上走"
+          ]
+        },
+        "control_funds_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "话，它是给我们去监测这个股票里面的，呃就是大资金啊公募私募啊机构这一类的资金有没有在操作的？ 郎慧彦 2025年09月08日  那红色面"
+          ]
+        },
+        "bubugao_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "是BS点主力进出龙头活跃，还有龙头四海，还有我们那个控盘资金步步高，这些指标你都可以直接去使用了。 郎慧彦 2025年09月08日  软"
+          ]
+        },
+        "value_quantify_explained": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "郎慧彦 2025年09月08日 你看一下它这个涨跌幅是不是67.06%啊这个波段的？……1万块钱进去的话补多少的话应该也有6000多块钱了，吧插头去位是不是6000块钱左右肯定有了，吧是不是？"
+          ]
+        },
+        "customer_stock_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "郎慧彦 2025年09月08日 英威城对吧？客户 2025年09月08日 对。郎慧彦 2025年09月08日 一个一个买一个卖这个买。郎慧彦 2025年09月08日 这个这个股票什么时候买的，呀那个吧套着呢大概买的嗯是近期买的套的还是很早很早之前买的套的，呀也了，吧"
+          ]
+        }
+      },
+      "customer_probing": {
+        "has_customer_probing": false,
+        "customer_probing_details": ""
+      },
+      "pain_point_quantification": {
+        "loss_pain": {
+          "pain_type": "亏损",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 6.0
+          },
+          "evidence_segments": [
+            "买进去之后我到S卖出，我不赚钱，甚至会有亏损的，嘛对不对？ 客户 2025年09",
+            "个股票用软件去看的话，我不去买，你帮你少亏了不少了，嘛对不对？虽然这两天涨回来了",
+            "止我的股票被套，也不会说让我有一个很大的损失的，啊所以它是最后的一个卖出信号点，",
+            "月08日 19:43:35 但是我都不想被套，那就要。 郎慧彦 2025年09月"
+          ],
+          "confidence": 0.76,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "weighted_confidence": 0.76
+          }
+        },
+        "miss_opportunity_pain": {
+          "pain_type": "踏空",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [
+            "的话，同样避点主力进出龙头活跃也不会让你错过的。 客户 2025年09月08日",
+            "就不是一点两点了，最安线走后之后的话不要后悔，如果后面他有机会让你去操作的话，同"
+          ],
+          "confidence": 0.7,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "weighted_confidence": 0.7
+          }
+        },
+        "chase_high_pain": {
+          "pain_type": "追高",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [
+            "原因所在，不容易让我卖飞，也不用说让我在高位再给他接回来，这样的话我就被持得入股",
+            "再去操作了，您再去操作的话，很容易给人家接盘的，吧是不是？啊所以红线上穿的时候我"
+          ],
+          "confidence": 0.7,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "weighted_confidence": 0.7
+          }
+        },
+        "panic_sell_pain": {
+          "pain_type": "割肉",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [
+            "是亏钱的，出现S店的话，我一定要给他及时止损卖出了。 郎慧彦 2025年09月0",
+            "分，后面的小孩能多减仓一部分，甚至是给他清仓，也没有任何关系，为什么说我们提到你"
+          ],
+          "confidence": 0.76,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "weighted_confidence": 0.76
+          }
+        },
+        "total_pain_score": 2.104,
+        "dominant_pain_type": "亏损",
+        "quantification_reliability": 0.29200000000000004
+      },
+      "analysis_timestamp": "2025-09-22T18:14:51.123545",
+      "model_version": "1.0.0",
+      "confidence_score": 0.5872447160682456
+    }
+  ],
+  "result_count": 1,
+  "generated_at": "2025-09-22T18:14:51.123990"
+}

@@ -209,5 +209,106 @@ class QualityMetrics(BaseModel):
     completion_rate: float = Field(ge=0.0, le=1.0, description="完成度")
 
 
+# 批量文件处理相关模型
+class FileParseStatus(str, Enum):
+    """文件解析状态"""
+    PENDING = "pending"
+    PARSING = "parsing"
+    SUCCESS = "success"
+    FAILED = "failed"
+
+
+class BatchFileProcessStatus(str, Enum):
+    """批量文件处理状态"""
+    PENDING = "pending"
+    PROCESSING = "processing"
+    SUCCESS = "success"
+    PARTIAL_SUCCESS = "partial_success"
+    FAILED = "failed"
+
+
+class FileProcessingMetrics(BaseModel):
+    """文件处理指标"""
+    call_count: int = Field(ge=0, description="通话数量")
+    processing_duration_seconds: float = Field(ge=0.0, description="处理耗时(秒)")
+    average_confidence: float = Field(ge=0.0, le=1.0, description="平均置信度")
+    memory_usage_mb: Optional[float] = Field(default=None, ge=0.0, description="内存使用量(MB)")
+
+
+class ParsedFileInput(BaseModel):
+    """解析后的文件输入"""
+    source_filename: str = Field(description="源文件名")
+    file_size_bytes: int = Field(ge=0, description="文件大小(字节)")
+    parse_status: FileParseStatus = Field(description="解析状态")
+    calls: List[CallInput] = Field(default_factory=list, description="解析出的通话列表")
+    parse_error: Optional[str] = Field(default=None, description="解析错误信息")
+    parse_warnings: List[str] = Field(default_factory=list, description="解析警告")
+    parsed_at: str = Field(description="解析时间戳")
+
+
+class BatchFileProcessRequest(BaseModel):
+    """批量文件处理请求"""
+    batch_id: str = Field(description="批次ID")
+    files: List[ParsedFileInput] = Field(description="文件列表", min_length=1, max_length=20)
+    config: Optional[AnalysisConfig] = Field(default=None, description="分析配置")
+    processing_options: Dict[str, Any] = Field(
+        default_factory=lambda: {
+            "continue_on_error": True,
+            "max_concurrency": 3,
+            "enable_streaming": False,
+            "result_storage": "local"
+        },
+        description="处理选项"
+    )
+
+
+class FileProcessingResult(BaseModel):
+    """单个文件处理结果"""
+    source_filename: str = Field(description="源文件名")
+    status: BatchFileProcessStatus = Field(description="处理状态")
+    results: List[CallAnalysisResult] = Field(default_factory=list, description="分析结果列表")
+    metrics: Optional[FileProcessingMetrics] = Field(default=None, description="处理指标")
+    error_message: Optional[str] = Field(default=None, description="错误信息")
+    warnings: List[str] = Field(default_factory=list, description="警告信息")
+    processed_at: str = Field(description="处理完成时间戳")
+    result_file_path: Optional[str] = Field(default=None, description="结果文件路径(如果启用文件存储)")
+
+
+class BatchProcessingStatistics(BaseModel):
+    """批量处理统计信息"""
+    total_files: int = Field(ge=0, description="总文件数")
+    successful_files: int = Field(ge=0, description="成功文件数")
+    failed_files: int = Field(ge=0, description="失败文件数")
+    partial_success_files: int = Field(ge=0, description="部分成功文件数")
+    total_calls_processed: int = Field(ge=0, description="总处理通话数")
+    total_duration_seconds: float = Field(ge=0.0, description="总处理时长")
+    average_calls_per_file: float = Field(ge=0.0, description="平均每文件通话数")
+    processing_rate_calls_per_second: float = Field(ge=0.0, description="处理速率(通话/秒)")
+    overall_success_rate: float = Field(ge=0.0, le=1.0, description="整体成功率")
+
+
+class BatchFileProcessResponse(BaseModel):
+    """批量文件处理响应"""
+    batch_id: str = Field(description="批次ID")
+    status: BatchFileProcessStatus = Field(description="批次处理状态")
+    files: List[FileProcessingResult] = Field(description="文件处理结果列表")
+    statistics: BatchProcessingStatistics = Field(description="统计信息")
+    processing_start_time: str = Field(description="处理开始时间")
+    processing_end_time: str = Field(description="处理结束时间")
+    batch_result_path: Optional[str] = Field(default=None, description="批次结果存储路径")
+
+
+class BatchProcessingConfig(BaseModel):
+    """批量处理配置"""
+    max_files_per_batch: int = Field(default=20, ge=1, le=50, description="每批次最大文件数")
+    max_calls_per_batch: int = Field(default=2000, ge=1, le=10000, description="每批次最大通话数")
+    max_file_size_mb: int = Field(default=200, ge=1, le=1000, description="单文件最大大小(MB)")
+    max_concurrent_files: int = Field(default=3, ge=1, le=10, description="最大并发文件数")
+    enable_result_caching: bool = Field(default=True, description="启用结果缓存")
+    result_retention_hours: int = Field(default=24, ge=1, le=168, description="结果保留时长(小时)")
+    enable_progress_tracking: bool = Field(default=True, description="启用进度跟踪")
+
+
 # JSON Schema导出
 CALL_ANALYSIS_SCHEMA = CallAnalysisResult.model_json_schema()
+BATCH_PROCESS_SCHEMA = BatchFileProcessResponse.model_json_schema()

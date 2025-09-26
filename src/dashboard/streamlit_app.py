@@ -735,22 +735,438 @@ class CallAnalysisDashboard:
         )
 
     def render_batch_analysis(self):
-        """渲染批量分析功能"""
-        st.header("📊 批量分析")
+        """渲染生产级批量分析功能"""
+        st.header("📊 批量文件分析")
 
+        # 配置说明
+        with st.expander("📋 使用说明", expanded=False):
+            st.markdown("""
+            **支持的文件格式：**
+            - **JSON**: 支持 `[CallInput...]`, `{"calls": [...]}`, 单个 `CallInput` 对象
+            - **JSONL**: 每行一个JSON对象
+            - **CSV**: 至少包含 `transcript` 列，可选 `call_id`, `customer_id`, `sales_id`, `call_time`
+            - **TXT**: 一个文件一个通话，支持分隔符分割多通话
+
+            **限制条件：**
+            - 最多 20 个文件/批次
+            - 最多 2000 条通话/批次
+            - 单个文件最大 200MB
+            - 最大并发处理 3 个文件
+            """)
+
+        # 批量处理配置
+        with st.sidebar.expander("⚙️ 批量处理设置"):
+            continue_on_error = st.checkbox(
+                "跳过错误文件继续处理",
+                value=True,
+                help="当某个文件解析失败时，继续处理其他文件"
+            )
+
+            max_concurrency = st.slider(
+                "最大并发文件数",
+                min_value=1,
+                max_value=5,
+                value=3,
+                help="同时处理的文件数量"
+            )
+
+            enable_result_storage = st.checkbox(
+                "启用结果持久化存储",
+                value=True,
+                help="将结果保存到服务器，支持后续下载"
+            )
+
+        # 文件上传区域
         uploaded_files = st.file_uploader(
-            "上传批量文件",
-            type=["json", "csv", "txt"],
+            "📁 选择批量文件",
+            type=["json", "jsonl", "csv", "txt"],
             accept_multiple_files=True,
-            help="支持 JSON、CSV、TXT 批量通话数据文件 (单个文件限制 200MB)",
+            help="支持 JSON、JSONL、CSV、TXT 格式，单个文件限制 200MB",
         )
 
         if uploaded_files:
-            st.write(f"已上传 {len(uploaded_files)} 个文件")
+            self._render_file_preview(uploaded_files)
 
-            if st.button("开始批量分析"):
-                # 这里实现批量分析逻辑
-                st.info("批量分析功能开发中...")
+            # 开始分析按钮
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                if st.button("🚀 开始批量分析", type="primary", use_container_width=True):
+                    self._execute_batch_analysis(
+                        uploaded_files,
+                        continue_on_error,
+                        max_concurrency,
+                        enable_result_storage
+                    )
+
+    def _render_file_preview(self, uploaded_files):
+        """渲染文件预览区域"""
+        st.subheader("📋 文件预览")
+
+        # 统计信息
+        total_size = sum(file.size for file in uploaded_files)
+        st.info(f"📊 已选择 {len(uploaded_files)} 个文件，总大小: {total_size/1024/1024:.1f} MB")
+
+        # 文件列表
+        file_data = []
+        for i, file in enumerate(uploaded_files):
+            file_ext = file.name.split('.')[-1].lower()
+            estimated_calls = self._estimate_call_count(file)
+
+            file_data.append({
+                "序号": i + 1,
+                "文件名": file.name,
+                "格式": file_ext.upper(),
+                "大小(MB)": round(file.size / 1024 / 1024, 2),
+                "预估通话数": estimated_calls,
+                "状态": "✅ 就绪"
+            })
+
+        st.dataframe(file_data, use_container_width=True)
+
+        # 验证文件批次
+        total_estimated_calls = sum(item["预估通话数"] for item in file_data)
+
+        if len(uploaded_files) > 20:
+            st.error(f"❌ 文件数量 ({len(uploaded_files)}) 超过限制 (20)")
+        elif total_estimated_calls > 2000:
+            st.warning(f"⚠️ 预估通话数 ({total_estimated_calls}) 可能超过限制 (2000)")
+        elif total_size > 200 * 1024 * 1024:
+            st.warning(f"⚠️ 总文件大小较大，处理时间可能较长")
+        else:
+            st.success("✅ 文件批次验证通过")
+
+    def _estimate_call_count(self, file) -> int:
+        """估算文件中的通话数量"""
+        try:
+            file_ext = file.name.split('.')[-1].lower()
+
+            # 简单的启发式估算
+            if file_ext == 'json':
+                return max(1, file.size // (5 * 1024))  # 假设每个通话约5KB
+            elif file_ext == 'jsonl':
+                # JSONL每行一个通话
+                content_sample = file.read(min(10240, file.size)).decode('utf-8', errors='ignore')
+                file.seek(0)  # 重置文件指针
+                lines = content_sample.count('\n')
+                return max(1, lines * (file.size // min(10240, file.size)))
+            elif file_ext == 'csv':
+                content_sample = file.read(min(5120, file.size)).decode('utf-8', errors='ignore')
+                file.seek(0)
+                lines = max(1, content_sample.count('\n') - 1)  # 减去表头
+                return lines * (file.size // min(5120, file.size))
+            elif file_ext == 'txt':
+                # TXT文件通常一个文件一个通话，除非有分隔符
+                content_sample = file.read(min(5120, file.size)).decode('utf-8', errors='ignore')
+                file.seek(0)
+                separators = content_sample.count('---') + content_sample.count('===')
+                return max(1, separators + 1)
+            else:
+                return 1
+        except:
+            return 1
+
+    def _execute_batch_analysis(self, uploaded_files, continue_on_error, max_concurrency, enable_storage):
+        """执行批量分析"""
+        import uuid
+        import time
+        import requests
+        from datetime import datetime
+
+        # 生成批次ID
+        batch_id = f"batch_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{str(uuid.uuid4())[:8]}"
+
+        # 初始化进度条和状态
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+
+        try:
+            # 第一阶段：文件解析
+            status_text.text("📖 正在解析文件...")
+
+            # 调用文件解析API（这里需要实现文件解析的前端逻辑）
+            parsed_files = self._parse_files_frontend(uploaded_files, batch_id)
+            progress_bar.progress(0.2)
+
+            if not parsed_files:
+                st.error("❌ 所有文件解析失败")
+                return
+
+            # 第二阶段：构建请求
+            status_text.text("🔧 准备批量处理请求...")
+
+            request_data = {
+                "batch_id": batch_id,
+                "files": parsed_files,
+                "config": self._get_analysis_config(),
+                "processing_options": {
+                    "continue_on_error": continue_on_error,
+                    "max_concurrency": max_concurrency,
+                    "result_storage": "local" if enable_storage else "memory"
+                }
+            }
+            progress_bar.progress(0.3)
+
+            # 第三阶段：调用API
+            status_text.text("⚡ 正在执行批量分析...")
+
+            api_url = f"{self.api_base_url}/analyze/batch/files"
+
+            # 显示实时进度
+            start_time = time.time()
+            with st.spinner("分析中..."):
+                response = requests.post(
+                    api_url,
+                    json=request_data,
+                    headers={"Content-Type": "application/json"},
+                    timeout=300  # 5分钟超时
+                )
+
+            if response.status_code != 200:
+                st.error(f"❌ API调用失败: {response.status_code} - {response.text}")
+                return
+
+            result = response.json()
+            processing_time = time.time() - start_time
+            progress_bar.progress(1.0)
+
+            # 第四阶段：显示结果
+            status_text.text("✅ 分析完成!")
+
+            st.success(f"🎉 批量分析完成! 耗时: {processing_time:.1f}秒")
+
+            # 渲染结果
+            self._render_batch_results(result, batch_id)
+
+        except requests.exceptions.Timeout:
+            st.error("⏱️ 请求超时，请检查文件大小或网络连接")
+        except requests.exceptions.ConnectionError:
+            st.error("🔌 无法连接到分析服务，请检查服务器状态")
+        except Exception as e:
+            st.error(f"❌ 处理失败: {str(e)}")
+            st.exception(e)
+
+    def _parse_files_frontend(self, uploaded_files, batch_id):
+        """前端文件解析逻辑"""
+        import json
+        import pandas as pd
+        from datetime import datetime
+
+        parsed_files = []
+
+        for file in uploaded_files:
+            try:
+                file_ext = file.name.split('.')[-1].lower()
+                file_content = file.read()
+
+                # 重置文件指针
+                file.seek(0)
+
+                # 解析文件内容
+                calls = []
+
+                if file_ext == 'json':
+                    try:
+                        data = json.loads(file_content.decode('utf-8'))
+
+                        if isinstance(data, list):
+                            calls = [self._normalize_call_input(item, i) for i, item in enumerate(data)]
+                        elif isinstance(data, dict):
+                            if 'calls' in data:
+                                calls = [self._normalize_call_input(item, i) for i, item in enumerate(data['calls'])]
+                            else:
+                                calls = [self._normalize_call_input(data, 0)]
+
+                    except json.JSONDecodeError as e:
+                        st.error(f"JSON解析失败 {file.name}: {e}")
+                        continue
+
+                elif file_ext == 'csv':
+                    try:
+                        import io
+                        df = pd.read_csv(io.StringIO(file_content.decode('utf-8')))
+
+                        if 'transcript' not in df.columns:
+                            st.error(f"CSV文件 {file.name} 缺少必需的 'transcript' 列")
+                            continue
+
+                        for idx, row in df.iterrows():
+                            call_data = {
+                                'call_id': str(row.get('call_id', f'{file.name}_row_{idx}')),
+                                'transcript': str(row['transcript']).strip()
+                            }
+
+                            # 添加可选字段
+                            for field in ['customer_id', 'sales_id', 'call_time']:
+                                if field in df.columns and pd.notna(row[field]):
+                                    call_data[field] = str(row[field])
+
+                            calls.append(call_data)
+
+                    except Exception as e:
+                        st.error(f"CSV解析失败 {file.name}: {e}")
+                        continue
+
+                elif file_ext == 'txt':
+                    try:
+                        content = file_content.decode('utf-8').strip()
+                        if content:
+                            calls.append({
+                                'call_id': f"{file.name.split('.')[0]}",
+                                'transcript': content
+                            })
+                    except Exception as e:
+                        st.error(f"TXT解析失败 {file.name}: {e}")
+                        continue
+
+                # 构建解析结果
+                parsed_file = {
+                    "source_filename": file.name,
+                    "file_size_bytes": len(file_content),
+                    "parse_status": "success",
+                    "calls": calls,
+                    "parse_warnings": [],
+                    "parsed_at": datetime.now().isoformat()
+                }
+
+                parsed_files.append(parsed_file)
+
+            except Exception as e:
+                st.error(f"处理文件 {file.name} 时发生错误: {e}")
+                continue
+
+        return parsed_files
+
+    def _normalize_call_input(self, data, index):
+        """标准化CallInput数据"""
+        if isinstance(data, str):
+            return {
+                'call_id': f'call_{index}',
+                'transcript': data
+            }
+        elif isinstance(data, dict):
+            normalized = {
+                'call_id': data.get('call_id', f'call_{index}'),
+                'transcript': data.get('transcript', '')
+            }
+
+            # 添加可选字段
+            for field in ['customer_id', 'sales_id', 'call_time', 'metadata']:
+                if field in data:
+                    normalized[field] = data[field]
+
+            return normalized
+        else:
+            return {
+                'call_id': f'call_{index}',
+                'transcript': str(data)
+            }
+
+    def _render_batch_results(self, result, batch_id):
+        """渲染批量分析结果"""
+        st.subheader("📈 批量分析结果")
+
+        # 总体统计
+        stats = result['statistics']
+
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("总文件数", stats['total_files'])
+        with col2:
+            st.metric("成功文件数", stats['successful_files'], delta=stats['successful_files'])
+        with col3:
+            st.metric("失败文件数", stats['failed_files'], delta=-stats['failed_files'] if stats['failed_files'] > 0 else None)
+        with col4:
+            st.metric("成功率", f"{stats['overall_success_rate']:.1%}")
+
+        # 处理统计
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("总通话数", stats['total_calls_processed'])
+        with col2:
+            st.metric("处理速度", f"{stats['processing_rate_calls_per_second']:.1f} 通话/秒")
+        with col3:
+            st.metric("总耗时", f"{stats['total_duration_seconds']:.1f} 秒")
+
+        # 文件级结果
+        st.subheader("📄 文件处理结果")
+
+        for file_result in result['files']:
+            with st.expander(
+                f"{'✅' if file_result['status'] == 'success' else '❌'} {file_result['source_filename']}"
+            ):
+                if file_result['status'] == 'success':
+                    # 成功的文件
+                    metrics = file_result.get('metrics', {})
+
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("通话数量", metrics.get('call_count', 0))
+                    with col2:
+                        st.metric("平均置信度", f"{metrics.get('average_confidence', 0):.2f}")
+                    with col3:
+                        st.metric("处理耗时", f"{metrics.get('processing_duration_seconds', 0):.1f}s")
+
+                    # 下载按钮
+                    if file_result.get('result_file_path'):
+                        st.download_button(
+                            f"📥 下载 {file_result['source_filename']} 分析结果",
+                            data=json.dumps(file_result['results'], ensure_ascii=False, indent=2),
+                            file_name=f"{file_result['source_filename']}.analysis.json",
+                            mime="application/json",
+                            key=f"download_{file_result['source_filename']}"
+                        )
+
+                else:
+                    # 失败的文件
+                    st.error(f"处理失败: {file_result.get('error_message', '未知错误')}")
+
+        # 批次结果下载
+        st.subheader("💾 批次结果下载")
+
+        # 汇总报告下载
+        from datetime import datetime
+
+        summary_data = {
+            "batch_id": batch_id,
+            "summary": result['statistics'],
+            "files": [
+                {
+                    "filename": f['source_filename'],
+                    "status": f['status'],
+                    "call_count": f.get('metrics', {}).get('call_count', 0),
+                    "confidence": f.get('metrics', {}).get('average_confidence', 0)
+                }
+                for f in result['files']
+            ],
+            "generated_at": datetime.now().isoformat()
+        }
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.download_button(
+                "📊 下载汇总报告",
+                data=json.dumps(summary_data, ensure_ascii=False, indent=2),
+                file_name=f"batch_summary_{batch_id}.json",
+                mime="application/json"
+            )
+
+        with col2:
+            # 完整结果下载
+            st.download_button(
+                "📦 下载完整结果",
+                data=json.dumps(result, ensure_ascii=False, indent=2),
+                file_name=f"batch_full_results_{batch_id}.json",
+                mime="application/json"
+            )
+
+    def _get_analysis_config(self):
+        """获取分析配置"""
+        # 从侧边栏获取配置（复用现有的配置）
+        return {
+            "enable_vector_search": st.session_state.get('enable_vector_search', True),
+            "enable_llm_validation": st.session_state.get('enable_llm_validation', True),
+            "confidence_threshold": st.session_state.get('confidence_threshold', 0.6)
+        }
 
     def run(self):
         """运行Dashboard"""

@@ -17,7 +17,7 @@ class ModelSettings(BaseSettings):
     """模型配置"""
     openai_api_key: str = Field(default="")
     openai_base_url: str = Field(default="https://dashscope.aliyuncs.com/compatible-mode/v1")
-    embedding_model: str = Field(default="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+    embedding_model: str = Field(default="./models/paraphrase-multilingual-MiniLM-L12-v2")
     llm_model: str = Field(default="deepseek-v3.1")
     temperature: float = Field(default=0.1, ge=0.0, le=2.0)
     max_tokens: int = Field(default=2000, ge=100, le=4000)
@@ -152,44 +152,6 @@ class LoggingSettings(BaseSettings):
     log_level: str = Field(default="INFO")
     log_file: str = Field(default="./logs/app.log")
     log_format: str = Field(default="{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{line} | {message}")
-
-
-class AppSettings(BaseSettings):
-    """应用配置"""
-    app_name: str = Field(default="销售通话质检系统")
-    version: str = Field(default="1.0.0")
-    description: str = Field(default="基于AI的销售通话质检与分析系统")
-
-    # 子配置
-    database: DatabaseSettings = Field(default_factory=DatabaseSettings)
-    model: ModelSettings = Field(default_factory=ModelSettings)
-    processing: ProcessingSettings = Field(default_factory=ProcessingSettings)
-    logging: LoggingSettings = Field(default_factory=LoggingSettings)
-    server: ServerSettings = Field(default_factory=ServerSettings)
-    pain_point: PainPointSettings = Field(default_factory=PainPointSettings)
-
-    # 统一的模型配置 - 合并 Config 类的设置
-    model_config = {
-        "extra": "allow",
-        "env_file": ".env",
-        "env_file_encoding": "utf-8",
-        "env_nested_delimiter": "__"
-    }
-
-    CUSTOMER_PROBING_PROMPT: str = """
-    你是一个通话分析专家。请分析以下通话记录，判断坐席是否考察了客户的个人情况。
-    考察客户情况包括但不限于询问或提及：
-    1. 仓位、资金量、持股情况。
-    2. 投资风格、经验、风险偏好。
-    3. 投资周期（长线/短线）。
-    4. 验证客户是否理解或掌握公司教授的投资方法（如战法、BS买卖点、步步高、周期共振等）。
-
-    如果判断为是，请回答'YES'并提供关键证据。如果不是，请回答'NO'。
-    通话记录：
-    ---
-    {transcript}
-    ---
-    """
 
 # 规则配置
 DETECTION_RULES = {
@@ -347,6 +309,59 @@ HANDLING_PATTERNS = {
     "改约渠道": r"(加(微信|vx)|发(资料|短信|邮件)|二维码|公众号)",
     "继续推进/成交请求": r"(试用|体验|现在给您开通|先开通|先注册|办理|下单|购买|成交)"
 }
+
+# 批量处理相关配置
+class BatchProcessingSettings(BaseSettings):
+    """批量处理设置"""
+    batch_max_files: int = Field(default=20, ge=1, le=50, description="每批次最大文件数")
+    batch_max_calls: int = Field(default=2000, ge=1, le=10000, description="每批次最大通话数")
+    batch_max_file_size_mb: int = Field(default=200, ge=1, le=1000, description="单文件最大大小(MB)")
+    batch_max_concurrency: int = Field(default=3, ge=1, le=10, description="最大并发处理文件数")
+    batch_result_storage_path: str = Field(default="./batch_results", description="批量结果存储路径")
+    batch_result_retention_hours: int = Field(default=24, ge=1, le=168, description="结果保留时长(小时)")
+    batch_enable_progress_tracking: bool = Field(default=True, description="启用进度跟踪")
+    batch_enable_auto_cleanup: bool = Field(default=True, description="启用自动清理过期结果")
+
+
+# 更新应用设置，包含批量处理配置
+class AppSettings(BaseSettings):
+    """应用配置"""
+    app_name: str = Field(default="销售通话质检系统")
+    version: str = Field(default="1.1.0")  # 升级版本号
+    description: str = Field(default="基于AI的销售通话质检与分析系统 - 支持批量文件处理")
+
+    # 子配置
+    database: DatabaseSettings = Field(default_factory=DatabaseSettings)
+    model: ModelSettings = Field(default_factory=ModelSettings)
+    processing: ProcessingSettings = Field(default_factory=ProcessingSettings)
+    logging: LoggingSettings = Field(default_factory=LoggingSettings)
+    server: ServerSettings = Field(default_factory=ServerSettings)
+    pain_point: PainPointSettings = Field(default_factory=PainPointSettings)
+    batch_processing: BatchProcessingSettings = Field(default_factory=BatchProcessingSettings)
+
+    # 统一的模型配置 - 合并 Config 类的设置
+    model_config = {
+        "extra": "allow",
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "env_nested_delimiter": "__"
+    }
+
+    CUSTOMER_PROBING_PROMPT: str = """
+    你是一个通话分析专家。请分析以下通话记录，判断坐席是否考察了客户的个人情况。
+    考察客户情况包括但不限于询问或提及：
+    1. 仓位、资金量、持股情况。
+    2. 投资风格、经验、风险偏好。
+    3. 投资周期（长线/短线）。
+    4. 验证客户是否理解或掌握公司教授的投资方法（如战法、BS买卖点、步步高、周期共振等）。
+
+    如果判断为是，请回答'YES'并提供关键证据。如果不是，请回答'NO'。
+    通话记录：
+    ---
+    {transcript}
+    ---
+    """
+
 
 # 全局设置实例
 settings = AppSettings()

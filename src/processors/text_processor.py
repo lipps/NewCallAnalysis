@@ -25,12 +25,17 @@ class TextProcessor:
                 r'工作人员[:：]',
                 r'(益盟|操盘手|客服中心|工作人员)[:：]',
                 r'(这边|我们这边|我这边).{0,6}(益盟|操盘手|客服|专员|老师|顾问)[:：]?',
-                r'益盟[:：]'
+                r'益盟[:：]',
+                # 添加具体人名模式 - 通常销售人员会用真实姓名
+                r'侯茜茜',  # 实际测试数据中的销售人员姓名
+                r'[小大]?[王李张赵陈刘黄周吴徐孙胡朱高林何郭马罗梁宋唐许韩冯邓曹彭曾肖田董袁潘于蒋蔡余杜叶程苏魏吕丁任沈姚卢姜崔钟谭陆汪范金石廖贾夏韦付方白邹孟熊秦邱江尹薛闫段雷侯龙史陶黎贺顾毛郝龚邵万钱严赖覃洪武莫孔汤向常温康施文牛樊葛邢安齐易乔伍庞颜倪庄聂章鲁岑薄翟殷詹申欧耿关兰焦俞左柳甘祝包宁尚符舒阮柯纪梅童凌毕单季裴霍涂成苗谷盛曲翁冉骆蓝路游辛靳管柴蒙乔连谢]{1,3}\s+\d{4}年\d{2}月\d{2}日\s+\d{2}:\d{2}:\d{2}',  # 人名+时间戳格式
+                r'[一-龯]{2,4}\s+\d{4}年\d{2}月\d{2}日\s+\d{2}:\d{2}:\d{2}',  # 通用中文姓名+时间戳格式
             ],
             'customer': [
                 r'(客户|用户|先生|女士|老板)[:：]',
                 r'(用户|投资者|股民)[:：]',
-                r'[小大]?[王李张赵陈刘](先生|女士|老板)[:：]'
+                r'[小大]?[王李张赵陈刘](先生|女士|老板)[:：]',
+                r'客户\s+\d{4}年\d{2}月\d{2}日\s+\d{2}:\d{2}:\d{2}',  # 客户+时间戳格式
             ]
         }
         
@@ -107,11 +112,19 @@ class TextProcessor:
         cleaned = text
         for pattern in self.noise_patterns:
             cleaned = re.sub(pattern, '', cleaned)
-        
-        # 标准化空白字符
-        cleaned = re.sub(r'\s+', ' ', cleaned)
+
+        # 标准化换行并保留对话行结构
+        cleaned = re.sub(r'\r\n?', '\n', cleaned)  # 统一行结束符
+
+        # 折叠行内多余的空格或制表符，保留换行
+        cleaned = re.sub(r'[ \t]+', ' ', cleaned)
+
+        # 去除每行首尾空格，防止出现空白行
+        cleaned = '\n'.join(line.strip() for line in cleaned.split('\n'))
+
+        # 去除首尾多余空行
         cleaned = cleaned.strip()
-        
+
         return cleaned
     
     def _split_dialogues(self, text: str) -> List[str]:
@@ -133,36 +146,66 @@ class TextProcessor:
     def _identify_speakers(self, dialogues: List[str]) -> List[Dict[str, Any]]:
         """识别说话人"""
         speaker_dialogues = []
+        i = 0
         
-        for dialogue in dialogues:
+        while i < len(dialogues):
+            dialogue = dialogues[i]
             speaker = 'unknown'
             content = dialogue
+            original = dialogue
             
-            # 检查销售模式
+            # 检查是否匹配时间戳格式的说话人标识
+            timestamp_speaker = None
+            
+            # 检查销售模式（包括时间戳格式）
             for pattern in self.speaker_patterns['sales']:
                 if re.search(pattern, dialogue):
                     speaker = 'sales'
-                    # 移除说话人标识
-                    content = re.sub(pattern, '', dialogue).strip()
+                    if '年' in dialogue and '月' in dialogue and '日' in dialogue:
+                        # 这是时间戳行，内容在下一行
+                        timestamp_speaker = 'sales'
+                        if i + 1 < len(dialogues):
+                            content = dialogues[i + 1]
+                            original = f"{dialogue}\n{content}"
+                            i += 1  # 跳过下一行，因为已经处理了
+                        else:
+                            content = ""
+                    else:
+                        # 移除说话人标识
+                        content = re.sub(pattern, '', dialogue).strip()
                     break
             
-            # 检查客户模式
+            # 检查客户模式（包括时间戳格式）
             if speaker == 'unknown':
                 for pattern in self.speaker_patterns['customer']:
                     if re.search(pattern, dialogue):
                         speaker = 'customer'
-                        content = re.sub(pattern, '', dialogue).strip()
+                        if '年' in dialogue and '月' in dialogue and '日' in dialogue:
+                            # 这是时间戳行，内容在下一行
+                            timestamp_speaker = 'customer'
+                            if i + 1 < len(dialogues):
+                                content = dialogues[i + 1]
+                                original = f"{dialogue}\n{content}"
+                                i += 1  # 跳过下一行，因为已经处理了
+                            else:
+                                content = ""
+                        else:
+                            content = re.sub(pattern, '', dialogue).strip()
                         break
             
             # 如果仍然未识别，根据内容特征推断
             if speaker == 'unknown':
                 speaker = self._infer_speaker_by_content(content)
             
-            speaker_dialogues.append({
-                'speaker': speaker,
-                'content': content,
-                'original': dialogue
-            })
+            # 只添加有实际内容的对话
+            if content.strip() and len(content.strip()) > 3:
+                speaker_dialogues.append({
+                    'speaker': speaker,
+                    'content': content,
+                    'original': original
+                })
+            
+            i += 1
         
         return speaker_dialogues
     

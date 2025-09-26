@@ -1,0 +1,490 @@
+{
+  "source_filename": "张伟3001145271.txt",
+  "analysis_results": [
+    {
+      "call_id": "张伟3001145271",
+      "customer_id": "",
+      "sales_id": "",
+      "call_time": "2025-09-23T17:10:05.962953",
+      "icebreak": {
+        "professional_identity": {
+          "hit": false,
+          "evidence": "张伟 2025年09月04日 唉你好，大哥，看到你是登录我们益盟操盘手软件了",
+          "confidence": 0.4516483516483517,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.11538461538461539,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.9,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.4516483516483517,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        },
+        "value_help": {
+          "hit": true,
+          "evidence": "张伟说：“他发出B点代表着股票大的上涨又开始了……所以这个B点大的上涨开始红四持股阶段，A点最后的卖点男四持币状态。”",
+          "confidence": 0.8,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.8,
+            "threshold": 0.6,
+            "contributors": [
+              "llm"
+            ]
+          }
+        },
+        "time_notice": {
+          "hit": false,
+          "evidence": "",
+          "confidence": 0.0,
+          "evidence_source": "none",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.0,
+            "threshold": 0.6,
+            "contributors": []
+          }
+        },
+        "company_background": {
+          "hit": false,
+          "evidence": "",
+          "confidence": 0.0,
+          "evidence_source": "none",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.0,
+            "threshold": 0.6,
+            "contributors": []
+          }
+        },
+        "free_teach": {
+          "hit": false,
+          "evidence": "",
+          "confidence": 0.0,
+          "evidence_source": "none",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.0,
+            "threshold": 0.6,
+            "contributors": []
+          }
+        },
+        "refuse_reason": "",
+        "refuse_recover_count": 0,
+        "next_appointment": false,
+        "rejection_reasons": [],
+        "handling_strategies": [],
+        "handle_objection_count": 0,
+        "rejection_kpi": {
+          "total": 0,
+          "by_type": [
+            {
+              "type": "无需求/已解决",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "忙没空/时间冲突",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "不信任/警惕",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "情绪负向/抱怨/要投诉",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "已卸载/不再使用产品",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "要求改为其他渠道（加微信/发资料/邮件）",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "价格/费用顾虑",
+              "count": 0,
+              "ratio": 0.0
+            }
+          ]
+        },
+        "handling_kpi": {
+          "total": 0,
+          "by_strategy": [
+            {
+              "strategy": "共情/确认",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "需求确认/提问",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "价值重申",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "备选时间",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "社会证明",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "改约渠道",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "继续推进/成交请求",
+              "count": 0,
+              "ratio": 0.0
+            }
+          ]
+        }
+      },
+      "演绎": {
+        "bs_explained": {
+          "hit": true,
+          "evidence": "作，如果你当时操作的话，到春天为止，你仍然是亏损的，所以这个B点大的上涨开始红四持股阶段，A点最后的卖点男四持币状态。 客户 2025年09月04日  但是他这个",
+          "confidence": 0.85,
+          "evidence_source": "rule",
+          "signals": {}
+        },
+        "period_resonance_explained": {
+          "hit": false,
+          "evidence": "无",
+          "confidence": 0.0,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.0,
+            "threshold": 0.6,
+            "contributors": []
+          }
+        },
+        "control_funds_explained": {
+          "hit": true,
+          "evidence": "张伟 2025年09月04日 主力进出，一定要红色的根线，代表着股票的主力资金线，一定要红色的日线，刚好穿过周黑色白色中文线完善了，证明主力资金是持续性流入的。",
+          "confidence": 0.9000000000000001,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.9,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.9000000000000001,
+            "threshold": 0.6,
+            "contributors": [
+              "llm"
+            ]
+          }
+        },
+        "bubugao_explained": {
+          "hit": false,
+          "evidence": "们采用活跃，一定要黄色的更近，穿过蓝色的海面线20大约20的，持续的往上走。 张伟 2",
+          "confidence": 0.16666666666666666,
+          "evidence_source": "rule",
+          "signals": {
+            "rule_confidence": 0.16666666666666666,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.16666666666666666,
+            "threshold": 0.6,
+            "contributors": [
+              "rule"
+            ]
+          }
+        },
+        "value_quantify_explained": {
+          "hit": true,
+          "evidence": "张伟 2025年09月04日  S点发出门卖掉。张伟 2025年09月04日  67对吧？你看一下67，对，只有一波收益了……发出S后我们要一定要全部清仓离场，如果你不走的话，直接你看一下你就被套了。",
+          "confidence": 0.8500000000000001,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.85,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.8500000000000001,
+            "threshold": 0.6,
+            "contributors": [
+              "llm"
+            ]
+          }
+        },
+        "customer_stock_explained": {
+          "hit": true,
+          "evidence": "张伟多次提到“输入一只股票002110”，并分析其K线、B点、主力资金、龙潭活跃指标等，例如：“你看一下这个B点，你看一下在这一天……发出B点代表着股票大的上涨又开始了”。",
+          "confidence": 0.9000000000000001,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.9,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.9000000000000001,
+            "threshold": 0.6,
+            "contributors": [
+              "llm"
+            ]
+          }
+        }
+      },
+      "process": {
+        "explain_duration_min": 0.5,
+        "interaction_rounds_per_min": 0.0,
+        "deal_or_visit": true,
+        "total_words": 8315,
+        "sales_words": 8315,
+        "customer_words": 0,
+        "money_ask_count": 1,
+        "money_ask_quotes": [
+          "客户 2025年09月04日  喂你好。 张伟 2025年09月04日  唉你好，大哥，看到你是登录我们益盟操盘手软件了，现在看的怎么样了？ 客户 2025年09月04日  嗯正在学习啊正在学习。 张伟 2025年09月04日  对对，那我..."
+        ]
+      },
+      "customer": {
+        "summary": "无客户对话内容",
+        "questions": [],
+        "value_recognition": "不明",
+        "attitude_score": 0.0
+      },
+      "actions": {
+        "professional_identity": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "张伟 2025年09月04日 唉你好，大哥，看到你是登录我们益盟操盘手软件了"
+          ]
+        },
+        "value_help": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "张伟说：“他发出B点代表着股票大的上涨又开始了……所以这个B点大的上涨开始红四持股阶段，A点最后的卖点男四持币状态。”"
+          ]
+        },
+        "time_notice": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": []
+        },
+        "company_background": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": []
+        },
+        "free_teach": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": []
+        },
+        "bs_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "作，如果你当时操作的话，到春天为止，你仍然是亏损的，所以这个B点大的上涨开始红四持股阶段，A点最后的卖点男四持币状态。 客户 2025年09月04日  但是他这个"
+          ]
+        },
+        "period_resonance_explained": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "无"
+          ]
+        },
+        "control_funds_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "张伟 2025年09月04日 主力进出，一定要红色的根线，代表着股票的主力资金线，一定要红色的日线，刚好穿过周黑色白色中文线完善了，证明主力资金是持续性流入的。"
+          ]
+        },
+        "bubugao_explained": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "们采用活跃，一定要黄色的更近，穿过蓝色的海面线20大约20的，持续的往上走。 张伟 2"
+          ]
+        },
+        "value_quantify_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "张伟 2025年09月04日  S点发出门卖掉。张伟 2025年09月04日  67对吧？你看一下67，对，只有一波收益了……发出S后我们要一定要全部清仓离场，如果你不走的话，直接你看一下你就被套了。"
+          ]
+        },
+        "customer_stock_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "张伟多次提到“输入一只股票002110”，并分析其K线、B点、主力资金、龙潭活跃指标等，例如：“你看一下这个B点，你看一下在这一天……发出B点代表着股票大的上涨又开始了”。"
+          ]
+        }
+      },
+      "customer_probing": {
+        "has_customer_probing": false,
+        "customer_probing_details": ""
+      },
+      "pain_point_quantification": {
+        "loss_pain": {
+          "pain_type": "亏损",
+          "detected": true,
+          "quantification": {
+            "amount": 21.0,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 6.0
+          },
+          "evidence_segments": [
+            "如果你当时操作的话，到春天为止，你仍然是亏损的，所以这个B点大的上涨开始红四持股",
+            "仓离场，如果你不走的话，直接你看一下你就被套了。 客户 2025年09月04日",
+            "\"如果你当时操作的话，到春天为止，你仍然是亏损的"
+          ],
+          "confidence": 0.9099999999999999,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 1.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "weighted_confidence": 0.9099999999999999
+          }
+        },
+        "miss_opportunity_pain": {
+          "pain_type": "踏空",
+          "detected": false,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": 0.5,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [],
+          "confidence": 0.15,
+          "detection_source": "quantification",
+          "signals": {
+            "rule_confidence": 0.0,
+            "quantification_score": 1.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "weighted_confidence": 0.15
+          }
+        },
+        "chase_high_pain": {
+          "pain_type": "追高",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [
+            "6:35 对，所以的话我们您也买低位不买高位高位的话这样也能赚到钱，那时候危险一",
+            "09月04日 15:35:41 有的喜欢追涨杀跌，嘛像这种发了根大阳线设一天发了",
+            "\"有的喜欢追涨杀跌，嘛像这种发了根大阳线设一天发了大阳线的他就冲进去了，然后看到这个借力天他就吓跑了\""
+          ],
+          "confidence": 0.76,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "weighted_confidence": 0.76
+          }
+        },
+        "panic_sell_pain": {
+          "pain_type": "割肉",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [
+            "点是最后的卖点，发出S后我们要一定要全部清仓离场，如果你不走的话，直接你看一下你"
+          ],
+          "confidence": 0.7,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "weighted_confidence": 0.7
+          }
+        },
+        "total_pain_score": 4.263999999999999,
+        "dominant_pain_type": "亏损",
+        "quantification_reliability": 0.3645
+      },
+      "analysis_timestamp": "2025-09-23T17:10:05.963000",
+      "model_version": "1.0.0",
+      "confidence_score": 0.44711954711954716
+    }
+  ],
+  "result_count": 1,
+  "generated_at": "2025-09-23T17:10:05.964752"
+}

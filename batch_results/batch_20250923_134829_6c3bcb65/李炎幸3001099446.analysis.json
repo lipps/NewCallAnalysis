@@ -1,0 +1,479 @@
+{
+  "source_filename": "李炎幸3001099446.txt",
+  "analysis_results": [
+    {
+      "call_id": "李炎幸3001099446",
+      "customer_id": "",
+      "sales_id": "",
+      "call_time": "2025-09-23T13:51:21.709976",
+      "icebreak": {
+        "professional_identity": {
+          "hit": true,
+          "evidence": "李炎幸 2025年09月04日  喂你好，啊我这里是一模操盘手的销服专员联信",
+          "confidence": 0.6708791208791209,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.46153846153846156,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.95,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.6708791208791209,
+            "threshold": 0.6,
+            "contributors": [
+              "rule",
+              "llm"
+            ]
+          }
+        },
+        "value_help": {
+          "hit": true,
+          "evidence": "能能明白的对吧？肯定能听懂的对吧？对，所以说这个就是我们软件给您提示的什么？给您提示的B点转折信号以及呢解决您的什么拿不住，或者是说买一买就跌的这种问题，就是帮您 客户",
+          "confidence": 0.8058823529411764,
+          "evidence_source": "rule",
+          "signals": {}
+        },
+        "time_notice": {
+          "hit": true,
+          "evidence": "说一下，就这个小程序好吧，我这边也有事情了，我这边不不大也不耽误您时间了，不耽误您时间了，再见啊。 客户 2025年09月04日  好好好，嗯好好",
+          "confidence": 0.8038461538461538,
+          "evidence_source": "rule",
+          "signals": {}
+        },
+        "company_background": {
+          "hit": true,
+          "evidence": "李炎幸 2025年09月04日  \"我们是腾讯控股的，我们公司是腾讯控股的\"",
+          "confidence": 0.9000000000000001,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.9,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.9000000000000001,
+            "threshold": 0.6,
+            "contributors": [
+              "llm"
+            ]
+          }
+        },
+        "free_teach": {
+          "hit": true,
+          "evidence": "就是总总体的资金，你可能在可能会在一些免费的软件上都能看到对吧？但是呢如果说你超过",
+          "confidence": 0.6,
+          "evidence_source": "rule",
+          "signals": {
+            "rule_confidence": 0.125,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.6,
+            "threshold": 0.6,
+            "contributors": [
+              "rule"
+            ]
+          }
+        },
+        "refuse_reason": "",
+        "refuse_recover_count": 0,
+        "next_appointment": true,
+        "rejection_reasons": [],
+        "handling_strategies": [],
+        "handle_objection_count": 0,
+        "rejection_kpi": {
+          "total": 0,
+          "by_type": [
+            {
+              "type": "无需求/已解决",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "忙没空/时间冲突",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "不信任/警惕",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "情绪负向/抱怨/要投诉",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "已卸载/不再使用产品",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "要求改为其他渠道（加微信/发资料/邮件）",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "type": "价格/费用顾虑",
+              "count": 0,
+              "ratio": 0.0
+            }
+          ]
+        },
+        "handling_kpi": {
+          "total": 0,
+          "by_strategy": [
+            {
+              "strategy": "共情/确认",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "需求确认/提问",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "价值重申",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "备选时间",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "社会证明",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "改约渠道",
+              "count": 0,
+              "ratio": 0.0
+            },
+            {
+              "strategy": "继续推进/成交请求",
+              "count": 0,
+              "ratio": 0.0
+            }
+          ]
+        }
+      },
+      "演绎": {
+        "bs_explained": {
+          "hit": true,
+          "evidence": "4日  李炎幸 2025年09月04日  同花顺上面就是一个B点，而且这他他这个B点提示的出来以后，S店提示出来之后，中间它不明显，对吧？有时候可能都看不到，而且有时候",
+          "confidence": 0.9624999999999999,
+          "evidence_source": "rule",
+          "signals": {}
+        },
+        "period_resonance_explained": {
+          "hit": true,
+          "evidence": "这个是我们操盘线的理念，它会帮你把握大的上涨波段，也会帮你规避什么？规避大的下跌风险，因",
+          "confidence": 0.6,
+          "evidence_source": "rule",
+          "signals": {
+            "rule_confidence": 0.3214285714285714,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.6,
+            "threshold": 0.6,
+            "contributors": [
+              "rule"
+            ]
+          }
+        },
+        "control_funds_explained": {
+          "hit": true,
+          "evidence": "李炎幸 2025年09月04日 唉那在讲之前呢问您一个问题，啊 就是我们做股票的时候，您是跟着主力做还是跟着散户做，是不是？对，啊肯定要跟着主力，而且呢我们还要分析主力的行为，对不对？",
+          "confidence": 0.9000000000000001,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.9,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.9000000000000001,
+            "threshold": 0.6,
+            "contributors": [
+              "llm"
+            ]
+          }
+        },
+        "bubugao_explained": {
+          "hit": false,
+          "evidence": "无",
+          "confidence": 0.0,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.0,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.0,
+            "threshold": 0.6,
+            "contributors": []
+          }
+        },
+        "value_quantify_explained": {
+          "hit": true,
+          "evidence": "\"你看一下那个S点S点能看到，吧如果说当天你卖不掉的话，怎么办？呢唉那你可以在第二天就紧接着第二天赶紧对吧？第二天赶紧的时候在盘中的时候对吧？\"",
+          "confidence": 0.9000000000000001,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.9,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.9000000000000001,
+            "threshold": 0.6,
+            "contributors": [
+              "llm"
+            ]
+          }
+        },
+        "customer_stock_explained": {
+          "hit": true,
+          "evidence": "李炎幸 2025年09月04日  对，这个股票呢之前还是表现的比较不错的，你看前面是不是有一个很大阶段的上涨，这两天开始下跌了，对吧？跌了将近20个点。",
+          "confidence": 0.95,
+          "evidence_source": "llm",
+          "signals": {
+            "rule_confidence": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.95,
+            "rule_weight": 0.4,
+            "vector_weight": 0.3,
+            "llm_weight": 0.3,
+            "final_confidence": 0.95,
+            "threshold": 0.6,
+            "contributors": [
+              "llm"
+            ]
+          }
+        }
+      },
+      "process": {
+        "explain_duration_min": 0.5,
+        "interaction_rounds_per_min": 0.0,
+        "deal_or_visit": true,
+        "total_words": 23259,
+        "sales_words": 23259,
+        "customer_words": 0,
+        "money_ask_count": 1,
+        "money_ask_quotes": [
+          "客户 2025年09月04日  喂你好。 李炎幸 2025年09月04日  喂你好，啊我这里是一模操盘手的销服专员联信，看到您近期的时候不是下载登录过咱们一模操盘手的股票分析软件吗？咱们这边专门过来跟你讲一下我们软件内部的一些核心功能，解决..."
+        ]
+      },
+      "customer": {
+        "summary": "无客户对话内容",
+        "questions": [],
+        "value_recognition": "不明",
+        "attitude_score": 0.0
+      },
+      "actions": {
+        "professional_identity": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "李炎幸 2025年09月04日  喂你好，啊我这里是一模操盘手的销服专员联信"
+          ]
+        },
+        "value_help": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "能能明白的对吧？肯定能听懂的对吧？对，所以说这个就是我们软件给您提示的什么？给您提示的B点转折信号以及呢解决您的什么拿不住，或者是说买一买就跌的这种问题，就是帮您 客户"
+          ]
+        },
+        "time_notice": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "说一下，就这个小程序好吧，我这边也有事情了，我这边不不大也不耽误您时间了，不耽误您时间了，再见啊。 客户 2025年09月04日  好好好，嗯好好"
+          ]
+        },
+        "company_background": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "李炎幸 2025年09月04日  \"我们是腾讯控股的，我们公司是腾讯控股的\""
+          ]
+        },
+        "free_teach": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "就是总总体的资金，你可能在可能会在一些免费的软件上都能看到对吧？但是呢如果说你超过"
+          ]
+        },
+        "bs_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "4日  李炎幸 2025年09月04日  同花顺上面就是一个B点，而且这他他这个B点提示的出来以后，S店提示出来之后，中间它不明显，对吧？有时候可能都看不到，而且有时候"
+          ]
+        },
+        "period_resonance_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "这个是我们操盘线的理念，它会帮你把握大的上涨波段，也会帮你规避什么？规避大的下跌风险，因"
+          ]
+        },
+        "control_funds_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "李炎幸 2025年09月04日 唉那在讲之前呢问您一个问题，啊 就是我们做股票的时候，您是跟着主力做还是跟着散户做，是不是？对，啊肯定要跟着主力，而且呢我们还要分析主力的行为，对不对？"
+          ]
+        },
+        "bubugao_explained": {
+          "executed": false,
+          "count": 0,
+          "evidence_list": [
+            "无"
+          ]
+        },
+        "value_quantify_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "\"你看一下那个S点S点能看到，吧如果说当天你卖不掉的话，怎么办？呢唉那你可以在第二天就紧接着第二天赶紧对吧？第二天赶紧的时候在盘中的时候对吧？\""
+          ]
+        },
+        "customer_stock_explained": {
+          "executed": true,
+          "count": 0,
+          "evidence_list": [
+            "李炎幸 2025年09月04日  对，这个股票呢之前还是表现的比较不错的，你看前面是不是有一个很大阶段的上涨，这两天开始下跌了，对吧？跌了将近20个点。"
+          ]
+        }
+      },
+      "customer_probing": {
+        "has_customer_probing": true,
+        "customer_probing_details": "1.  **软件功能演示**：详细讲解软件的BS买卖点、主力资金指标（ZLGC）等特定功能，并以具体股票（600410华盛天成、601929吉视传媒）为例进行技术分析。 -   未询问或提及客户的仓位、资金量、持股情况。 -   未探讨客户的投资风格、经验或风险偏好。 -   未询问客户的投资周期是长线还是短线。"
+      },
+      "pain_point_quantification": {
+        "loss_pain": {
+          "pain_type": "亏损",
+          "detected": true,
+          "quantification": {
+            "amount": 20.0,
+            "frequency": null,
+            "ratio": 0.3,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [
+            "损了，明白吧？因为你看我们两天亏两天将近亏了20个点，1万块钱的话亏2000，1"
+          ],
+          "confidence": 0.9175,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 1.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.9,
+            "weighted_confidence": 0.9175
+          }
+        },
+        "miss_opportunity_pain": {
+          "pain_type": "踏空",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": 0.0032,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [
+            "这样的提示，很容易就被洗出来了，很容易就踏空了，是不是就是我们经常什么经常遇到那",
+            "机手机对吧？都能理解，但是这个活动您不要错过了，这非常划算了，你相当于是免费用软",
+            "\"很容易就踏空了，是不是就是我们经常什么经常遇到那种一脉，人家就涨了，对吧？\""
+          ],
+          "confidence": 0.9099999999999999,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 1.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "weighted_confidence": 0.9099999999999999
+          }
+        },
+        "chase_high_pain": {
+          "pain_type": "追高",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [
+            "就比如说这个华盛天城，他从B点发出来到最高位置26块8毛5的位置，他可能已经翻了",
+            "对，那当天当天可能涨五个点，我们要不要追涨，不要追涨，我们怎么办？我们7月25"
+          ],
+          "confidence": 0.76,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "weighted_confidence": 0.76
+          }
+        },
+        "panic_sell_pain": {
+          "pain_type": "割肉",
+          "detected": true,
+          "quantification": {
+            "amount": null,
+            "frequency": null,
+            "ratio": null,
+            "duration": null,
+            "severity_score": 5.0
+          },
+          "evidence_segments": [
+            "日 16:30:46 及时的什么及时的要止损了，明白吧？因为你看我们两天亏两天将"
+          ],
+          "confidence": 0.76,
+          "detection_source": "rule",
+          "signals": {
+            "rule_confidence": 1.0,
+            "quantification_score": 0.0,
+            "vector_similarity": 0.0,
+            "llm_confidence": 0.8,
+            "weighted_confidence": 0.76
+          }
+        },
+        "total_pain_score": 3.927,
+        "dominant_pain_type": "亏损",
+        "quantification_reliability": 0.48475
+      },
+      "analysis_timestamp": "2025-09-23T13:51:21.709981",
+      "model_version": "1.0.0",
+      "confidence_score": 0.7357370570605866
+    }
+  ],
+  "result_count": 1,
+  "generated_at": "2025-09-23T13:51:21.715396"
+}
