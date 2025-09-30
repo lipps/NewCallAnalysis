@@ -147,6 +147,16 @@ class PainPointSettings(BaseSettings):
     )
 
 
+class UISettings(BaseSettings):
+    """UI适配器配置"""
+    ui_evidence_max_length: int = Field(default=200, ge=50, le=1000, description="UI证据片段最大长度")
+    ui_cache_enabled: bool = Field(default=True, description="启用UI适配器缓存")
+    ui_cache_size: int = Field(default=100, ge=10, le=1000, description="UI适配器缓存大小")
+    ui_enable_evidence_enhancement: bool = Field(default=True, description="启用证据增强功能")
+    ui_evidence_match_threshold: float = Field(default=0.3, ge=0.1, le=0.9, description="证据匹配阈值")
+    ui_fallback_enabled: bool = Field(default=True, description="启用降级处理")
+
+
 class LoggingSettings(BaseSettings):
     """日志配置"""
     log_level: str = Field(default="INFO")
@@ -338,6 +348,7 @@ class AppSettings(BaseSettings):
     server: ServerSettings = Field(default_factory=ServerSettings)
     pain_point: PainPointSettings = Field(default_factory=PainPointSettings)
     batch_processing: BatchProcessingSettings = Field(default_factory=BatchProcessingSettings)
+    ui: UISettings = Field(default_factory=UISettings)
 
     # 统一的模型配置 - 合并 Config 类的设置
     model_config = {

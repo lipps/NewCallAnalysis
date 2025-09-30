@@ -138,242 +138,339 @@ class CallAnalysisWorkflow:
                 }
             }
     
-    async def _icebreak_analysis_node(self, state: WorkflowState) -> WorkflowState:
+    async def _icebreak_analysis_node(self, state: dict) -> dict:
         """破冰分析节点"""
         start_time = asyncio.get_event_loop().time()
         
         try:
-            if state.processed_text is None:
+            if state.get("processed_text") is None:
                 raise ValueError("需要先完成文本预处理")
                 
-            logger.info(f"开始破冰分析: {state.call_input.call_id}")
+            call_input = state["call_input"]
+            config = state["config"]
+            logger.info(f"开始破冰分析: {call_input.call_id}")
             
             icebreak_result = await self.icebreak_processor.analyze(
-                state.processed_text,
-                state.config
+                state["processed_text"],
+                config
             )
             
-            state.icebreak_result = icebreak_result
+            # 确保结果是字典格式
+            if hasattr(icebreak_result, 'dict'):
+                icebreak_result = icebreak_result.dict()
             
-            logger.info(f"破冰分析完成: {state.call_input.call_id}")
+            logger.info(f"破冰分析完成: {call_input.call_id}")
+            
+            return {
+                **state,
+                "icebreak_result": icebreak_result,
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "icebreak_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
             
         except Exception as e:
             logger.error(f"破冰分析失败: {e}")
-            state.errors.append(f"破冰分析失败: {str(e)}")
-            
-        finally:
-            end_time = asyncio.get_event_loop().time()
-            state.execution_time["icebreak_analysis"] = end_time - start_time
-            
-        return state
+            return {
+                **state,
+                "errors": state.get("errors", []) + [f"破冰分析失败: {str(e)}"],
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "icebreak_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
     
-    async def _deduction_analysis_node(self, state: WorkflowState) -> WorkflowState:
+    async def _deduction_analysis_node(self, state: dict) -> dict:
         """功能演绎分析节点"""
         start_time = asyncio.get_event_loop().time()
         
         try:
-            if state.processed_text is None:
+            if state.get("processed_text") is None:
                 raise ValueError("需要先完成文本预处理")
                 
-            logger.info(f"开始功能演绎分析: {state.call_input.call_id}")
+            call_input = state["call_input"]
+            config = state["config"]
+            logger.info(f"开始功能演绎分析: {call_input.call_id}")
             
             deduction_result = await self.deduction_processor.analyze(
-                state.processed_text,
-                state.config
+                state["processed_text"],
+                config
             )
             
-            state.deduction_result = deduction_result
+            # 确保结果是字典格式
+            if hasattr(deduction_result, 'dict'):
+                deduction_result = deduction_result.dict()
             
-            logger.info(f"功能演绎分析完成: {state.call_input.call_id}")
+            logger.info(f"功能演绎分析完成: {call_input.call_id}")
+            
+            return {
+                **state,
+                "deduction_result": deduction_result,
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "deduction_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
             
         except Exception as e:
             logger.error(f"功能演绎分析失败: {e}")
-            state.errors.append(f"功能演绎分析失败: {str(e)}")
-            
-        finally:
-            end_time = asyncio.get_event_loop().time()
-            state.execution_time["deduction_analysis"] = end_time - start_time
-            
-        return state
+            return {
+                **state,
+                "errors": state.get("errors", []) + [f"功能演绎分析失败: {str(e)}"],
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "deduction_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
     
-    async def _process_analysis_node(self, state: WorkflowState) -> WorkflowState:
+    async def _process_analysis_node(self, state: dict) -> dict:
         """过程分析节点"""
         start_time = asyncio.get_event_loop().time()
         
         try:
-            if state.processed_text is None:
+            if state.get("processed_text") is None:
                 raise ValueError("需要先完成文本预处理")
                 
-            logger.info(f"开始过程分析: {state.call_input.call_id}")
+            call_input = state["call_input"]
+            config = state["config"]
+            logger.info(f"开始过程分析: {call_input.call_id}")
             
             process_result = await self.process_processor.analyze(
-                state.processed_text,
-                state.config
+                state["processed_text"],
+                config
             )
             
-            state.process_result = process_result
+            # 确保结果是字典格式
+            if hasattr(process_result, 'dict'):
+                process_result = process_result.dict()
             
-            logger.info(f"过程分析完成: {state.call_input.call_id}")
+            logger.info(f"过程分析完成: {call_input.call_id}")
+            
+            return {
+                **state,
+                "process_result": process_result,
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "process_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
             
         except Exception as e:
             logger.error(f"过程分析失败: {e}")
-            state.errors.append(f"过程分析失败: {str(e)}")
-            
-        finally:
-            end_time = asyncio.get_event_loop().time()
-            state.execution_time["process_analysis"] = end_time - start_time
-            
-        return state
+            return {
+                **state,
+                "errors": state.get("errors", []) + [f"过程分析失败: {str(e)}"],
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "process_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
     
-    async def _customer_analysis_node(self, state: WorkflowState) -> WorkflowState:
+    async def _customer_analysis_node(self, state: dict) -> dict:
         """客户分析节点"""
         start_time = asyncio.get_event_loop().time()
         
         try:
-            if state.processed_text is None:
+            if state.get("processed_text") is None:
                 raise ValueError("需要先完成文本预处理")
                 
-            logger.info(f"开始客户分析: {state.call_input.call_id}")
+            call_input = state["call_input"]
+            config = state["config"]
+            logger.info(f"开始客户分析: {call_input.call_id}")
             
             customer_result = await self.customer_processor.analyze(
-                state.processed_text,
-                state.config
+                state["processed_text"],
+                config
             )
             
-            state.customer_result = customer_result
+            # 确保结果是字典格式
+            if hasattr(customer_result, 'dict'):
+                customer_result = customer_result.dict()
             
-            logger.info(f"客户分析完成: {state.call_input.call_id}")
+            logger.info(f"客户分析完成: {call_input.call_id}")
+            
+            return {
+                **state,
+                "customer_result": customer_result,
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "customer_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
             
         except Exception as e:
             logger.error(f"客户分析失败: {e}")
-            state.errors.append(f"客户分析失败: {str(e)}")
-            
-        finally:
-            end_time = asyncio.get_event_loop().time()
-            state.execution_time["customer_analysis"] = end_time - start_time
-            
-        return state
+            return {
+                **state,
+                "errors": state.get("errors", []) + [f"客户分析失败: {str(e)}"],
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "customer_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
 
-    async def _customer_probing_analysis_node(self, state: WorkflowState) -> WorkflowState:
+    async def _customer_probing_analysis_node(self, state: dict) -> dict:
         """客户情况考察分析节点"""
         start_time = asyncio.get_event_loop().time()
         
         try:
-            if state.processed_text is None:
+            if state.get("processed_text") is None:
                 raise ValueError("需要先完成文本预处理")
                 
-            logger.info(f"开始客户情况考察分析: {state.call_input.call_id}")
+            call_input = state["call_input"]
+            config = state["config"]
+            logger.info(f"开始客户情况考察分析: {call_input.call_id}")
             
             customer_probing_result = await self.customer_probing_processor.analyze(
-                state.processed_text,
-                state.config
+                state["processed_text"],
+                config
             )
             
-            state.customer_probing_result = customer_probing_result
+            # 确保结果是字典格式
+            if hasattr(customer_probing_result, 'dict'):
+                customer_probing_result = customer_probing_result.dict()
             
-            logger.info(f"客户情况考察分析完成: {state.call_input.call_id}")
+            logger.info(f"客户情况考察分析完成: {call_input.call_id}")
+            
+            return {
+                **state,
+                "customer_probing_result": customer_probing_result,
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "customer_probing_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
             
         except Exception as e:
             logger.error(f"客户情况考察分析失败: {e}")
-            state.errors.append(f"客户情况考察分析失败: {str(e)}")
-            
-        finally:
-            end_time = asyncio.get_event_loop().time()
-            state.execution_time["customer_probing_analysis"] = end_time - start_time
-            
-        return state
+            return {
+                **state,
+                "errors": state.get("errors", []) + [f"客户情况考察分析失败: {str(e)}"],
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "customer_probing_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
     
-    async def _action_analysis_node(self, state: WorkflowState) -> WorkflowState:
+    async def _action_analysis_node(self, state: dict) -> dict:
         """动作分析节点"""
         start_time = asyncio.get_event_loop().time()
         
         try:
-            logger.info(f"开始动作分析: {state.call_input.call_id}")
+            call_input = state["call_input"]
+            config = state["config"]
+            logger.info(f"开始动作分析: {call_input.call_id}")
             
-            # 等待破冰和演绎分析完成
-            if state.icebreak_result is None or state.deduction_result is None:
-                state.warnings.append("破冰或演绎分析未完成，使用空结果进行动作分析")
+            # 检查破冰和演绎分析结果
+            warnings = state.get("warnings", [])
+            if state.get("icebreak_result") is None or state.get("deduction_result") is None:
+                warnings.append("破冰或演绎分析未完成，使用空结果进行动作分析")
                 
             action_result = await self.action_processor.analyze(
-                state.icebreak_result or {},
-                state.deduction_result or {},
-                state.config
+                state.get("icebreak_result", {}),
+                state.get("deduction_result", {}),
+                config
             )
             
-            state.action_result = action_result
+            # 确保结果是字典格式
+            if hasattr(action_result, 'dict'):
+                action_result = action_result.dict()
             
-            logger.info(f"动作分析完成: {state.call_input.call_id}")
+            logger.info(f"动作分析完成: {call_input.call_id}")
+            
+            return {
+                **state,
+                "action_result": action_result,
+                "warnings": warnings,
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "action_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
             
         except Exception as e:
             logger.error(f"动作分析失败: {e}")
-            state.errors.append(f"动作分析失败: {str(e)}")
-            
-        finally:
-            end_time = asyncio.get_event_loop().time()
-            state.execution_time["action_analysis"] = end_time - start_time
-            
-        return state
+            return {
+                **state,
+                "errors": state.get("errors", []) + [f"动作分析失败: {str(e)}"],
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "action_analysis": asyncio.get_event_loop().time() - start_time
+                }
+            }
     
-    async def _result_aggregation_node(self, state: WorkflowState) -> WorkflowState:
+    async def _result_aggregation_node(self, state: dict) -> dict:
         """结果聚合节点"""
         start_time = asyncio.get_event_loop().time()
         
         try:
-            logger.info(f"开始结果聚合: {state.call_input.call_id}")
+            call_input = state["call_input"]
+            logger.info(f"开始结果聚合: {call_input.call_id}")
             
             # 构建最终结果
             final_result = CallAnalysisResult(
-                call_id=state.call_input.call_id,
-                customer_id=state.call_input.customer_id,
-                sales_id=state.call_input.sales_id,
-                call_time=state.call_input.call_time,
+                call_id=call_input.call_id,
+                customer_id=call_input.customer_id,
+                sales_id=call_input.sales_id,
+                call_time=call_input.call_time,
                 
-                icebreak=state.icebreak_result or {},
-                演绎=state.deduction_result or {},
-                process=state.process_result or {},
-                customer=state.customer_result or {},
-                actions=state.action_result or {},
-                customer_probing=state.customer_probing_result or {},
+                icebreak=state.get("icebreak_result", {}),
+                演绎=state.get("deduction_result", {}),
+                process=state.get("process_result", {}),
+                customer=state.get("customer_result", {}),
+                actions=state.get("action_result", {}),
+                customer_probing=state.get("customer_probing_result", {}),
                 
                 analysis_timestamp=datetime.now().isoformat(),
                 model_version="1.0",
                 confidence_score=self._calculate_confidence(state)
             )
             
-            state.final_result = final_result
-            
             # 计算总执行时间
-            total_time = sum(state.execution_time.values())
-            logger.info(f"结果聚合完成: {state.call_input.call_id}, 总耗时: {total_time:.2f}秒")
+            total_time = sum(state.get("execution_time", {}).values())
+            logger.info(f"结果聚合完成: {call_input.call_id}, 总耗时: {total_time:.2f}秒")
+            
+            return {
+                **state,
+                "final_result": final_result,
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "result_aggregation": asyncio.get_event_loop().time() - start_time
+                }
+            }
             
         except Exception as e:
             logger.error(f"结果聚合失败: {e}")
-            state.errors.append(f"结果聚合失败: {str(e)}")
-            
-        finally:
-            end_time = asyncio.get_event_loop().time()
-            state.execution_time["result_aggregation"] = end_time - start_time
-            
-        return state
+            return {
+                **state,
+                "errors": state.get("errors", []) + [f"结果聚合失败: {str(e)}"],
+                "execution_time": {
+                    **state.get("execution_time", {}),
+                    "result_aggregation": asyncio.get_event_loop().time() - start_time
+                }
+            }
     
-    def _calculate_confidence(self, state: WorkflowState) -> float:
+    def _calculate_confidence(self, state: dict) -> float:
         """计算整体置信度"""
         confidence_scores = []
         
         # 收集各模块的置信度
-        if state.icebreak_result:
+        icebreak_result = state.get("icebreak_result")
+        if icebreak_result:
             # 计算破冰模块平均置信度
             icebreak_confidences = []
-            for key, value in state.icebreak_result.items():
+            for key, value in icebreak_result.items():
                 if isinstance(value, dict) and 'confidence' in value:
                     icebreak_confidences.append(value['confidence'])
             if icebreak_confidences:
                 confidence_scores.append(sum(icebreak_confidences) / len(icebreak_confidences))
                 
-        if state.deduction_result:
+        deduction_result = state.get("deduction_result")
+        if deduction_result:
             # 计算演绎模块平均置信度
             deduction_confidences = []
-            for key, value in state.deduction_result.items():
+            for key, value in deduction_result.items():
                 if isinstance(value, dict) and 'confidence' in value:
                     deduction_confidences.append(value['confidence'])
             if deduction_confidences:

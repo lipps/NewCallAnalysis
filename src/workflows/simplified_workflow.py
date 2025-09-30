@@ -23,25 +23,28 @@ logger = get_logger(__name__)
 
 class SimpleCallAnalysisWorkflow:
     """简化的通话分析工作流"""
-    
+
     def __init__(self,
                  vector_engine: VectorSearchEngine,
                  rule_engine: RuleEngine,
                  llm_engine: LLMEngine):
-        
+
         self.vector_engine = vector_engine
         self.rule_engine = rule_engine
         self.llm_engine = llm_engine
-        
+
         # 初始化处理器
         self.text_processor = TextProcessor()
         self.icebreak_processor = IcebreakProcessor(vector_engine, rule_engine, llm_engine)
-        self.deduction_processor = DeductionProcessor(vector_engine, rule_engine, llm_engine) 
+        self.deduction_processor = DeductionProcessor(vector_engine, rule_engine, llm_engine)
         self.process_processor = ProcessProcessor()
         self.customer_processor = CustomerProcessor(llm_engine)
         self.action_processor = ActionProcessor()
         self.customer_probing_processor = CustomerProbingProcessor(llm_engine)
         self.pain_point_processor = PainPointProcessor(vector_engine, rule_engine, llm_engine)
+
+        # 新增：缓存处理文本用于UI适配器
+        self._last_processed_text: Optional[Dict] = None
     
     async def execute(self, 
                      call_input: CallInput, 
@@ -61,6 +64,9 @@ class SimpleCallAnalysisWorkflow:
             processed_text = await self.text_processor.process(call_input.transcript)
             execution_times["text_processing"] = asyncio.get_event_loop().time() - start_time
             logger.info(f"文本预处理完成: {call_input.call_id}")
+
+            # 新增：缓存处理文本用于UI适配器
+            self._last_processed_text = processed_text
             
             # 2. 破冰分析
             start_time = asyncio.get_event_loop().time()
@@ -175,6 +181,23 @@ class SimpleCallAnalysisWorkflow:
                 confidence_scores.append(attr.confidence)
         
         return sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0.0
+
+    def get_last_processed_text(self) -> Optional[Dict]:
+        """获取最后一次处理的文本数据
+
+        用于UI适配器获取结构化的文本数据，包含对话片段、时间戳等信息
+
+        Returns:
+            Optional[Dict]: 处理后的文本数据，如果没有则返回None
+        """
+        return self._last_processed_text
+
+    def clear_processed_text_cache(self) -> None:
+        """清空处理文本缓存
+
+        在批量处理时或需要释放内存时调用
+        """
+        self._last_processed_text = None
     
     async def execute_batch(self,
                            inputs: list[CallInput],

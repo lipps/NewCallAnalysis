@@ -20,6 +20,7 @@ class TextProcessor:
         # 销售和客户标识符模式
         self.speaker_patterns = {
             'sales': [
+                # 传统中文格式
                 r'(销售|客服|顾问|老师|分析师|专员)[:：]',
                 r'[小大]?[王李张赵陈刘][:：]',
                 r'工作人员[:：]',
@@ -32,6 +33,7 @@ class TextProcessor:
                 r'[一-龯]{2,4}\s+\d{4}年\d{2}月\d{2}日\s+\d{2}:\d{2}:\d{2}',  # 通用中文姓名+时间戳格式
             ],
             'customer': [
+                # 传统中文格式
                 r'(客户|用户|先生|女士|老板)[:：]',
                 r'(用户|投资者|股民)[:：]',
                 r'[小大]?[王李张赵陈刘](先生|女士|老板)[:：]',
@@ -39,13 +41,19 @@ class TextProcessor:
             ]
         }
         
-        # 时间戳模式
-        self.timestamp_pattern = r'\d{2}:\d{2}:\d{2}'
+        # A/B格式的说话人标识模式 - 重要：A是销售，B是客户
+        self.ab_speaker_pattern = r'\[(\d+:\d+:\d+)\]([AB]):'
+        
+        # 时间戳模式 - 支持多种格式
+        self.timestamp_patterns = [
+            r'\d{2}:\d{2}:\d{2}',  # HH:MM:SS 传统格式
+            r'\[(\d+:\d+:\d+)\]',  # [H:M:S] 新格式
+        ]
         
         # 无效内容模式
         self.noise_patterns = [
-            r'\[.*?\]',  # 括号内容
-            r'<.*?>',    # 尖括号内容
+            r'<br\s*/?>', # HTML换行标签
+            r'<.*?>',    # 其他HTML标签
             r'（.*?）',   # 中文括号
             r'\(.*?\)',  # 英文括号
             r'嗯{2,}',   # 多个嗯
@@ -96,7 +104,7 @@ class TextProcessor:
                 'processing_time': end_time - start_time
             }
             
-            logger.info(f"文本预处理完成，耗时: {result['processing_time']:.2f}秒")
+            logger.info(f"文本预处理完成，对话数: {len(timed_dialogues)}, 时长估算: {statistics.get('estimated_duration_minutes', 0):.1f}分钟")
             return result
             
         except Exception as e:
@@ -108,10 +116,16 @@ class TextProcessor:
         if not text:
             return ""
             
-        # 去除噪音模式
         cleaned = text
+        
+        # 先处理HTML标签 - 特别是<br/>标签，替换为换行符而不是移除
+        cleaned = re.sub(r'<br\s*/?>', '\n', cleaned)  # 将<br/>标签替换为换行符
+        cleaned = re.sub(r'<.*?>', '', cleaned)        # 移除其他HTML标签
+        
+        # 去除其他噪音模式（但不包括时间戳括号）
         for pattern in self.noise_patterns:
-            cleaned = re.sub(pattern, '', cleaned)
+            if not pattern.startswith(r'<br') and pattern != r'<.*?>':  # 已经处理过HTML标签
+                cleaned = re.sub(pattern, '', cleaned)
 
         # 标准化换行并保留对话行结构
         cleaned = re.sub(r'\r\n?', '\n', cleaned)  # 统一行结束符
@@ -120,7 +134,7 @@ class TextProcessor:
         cleaned = re.sub(r'[ \t]+', ' ', cleaned)
 
         # 去除每行首尾空格，防止出现空白行
-        cleaned = '\n'.join(line.strip() for line in cleaned.split('\n'))
+        cleaned = '\n'.join(line.strip() for line in cleaned.split('\n') if line.strip())
 
         # 去除首尾多余空行
         cleaned = cleaned.strip()
@@ -146,66 +160,65 @@ class TextProcessor:
     def _identify_speakers(self, dialogues: List[str]) -> List[Dict[str, Any]]:
         """识别说话人"""
         speaker_dialogues = []
-        i = 0
         
-        while i < len(dialogues):
-            dialogue = dialogues[i]
+        for i, dialogue in enumerate(dialogues):
             speaker = 'unknown'
             content = dialogue
             original = dialogue
+            timestamp_str = None
             
-            # 检查是否匹配时间戳格式的说话人标识
-            timestamp_speaker = None
-            
-            # 检查销售模式（包括时间戳格式）
-            for pattern in self.speaker_patterns['sales']:
-                if re.search(pattern, dialogue):
+            # 优先检查A/B格式
+            ab_match = re.match(self.ab_speaker_pattern, dialogue)
+            if ab_match:
+                timestamp_str = ab_match.group(1)
+                speaker_letter = ab_match.group(2)
+                
+                # A代表销售(Agent)，B代表客户(Buyer)
+                if speaker_letter == 'A':
                     speaker = 'sales'
-                    if '年' in dialogue and '月' in dialogue and '日' in dialogue:
-                        # 这是时间戳行，内容在下一行
-                        timestamp_speaker = 'sales'
-                        if i + 1 < len(dialogues):
-                            content = dialogues[i + 1]
-                            original = f"{dialogue}\n{content}"
-                            i += 1  # 跳过下一行，因为已经处理了
-                        else:
-                            content = ""
-                    else:
-                        # 移除说话人标识
-                        content = re.sub(pattern, '', dialogue).strip()
-                    break
+                elif speaker_letter == 'B':
+                    speaker = 'customer'
+                
+                # 提取内容（去除时间戳和说话人标识）
+                content = dialogue[ab_match.end():].strip()
             
-            # 检查客户模式（包括时间戳格式）
-            if speaker == 'unknown':
-                for pattern in self.speaker_patterns['customer']:
+            else:
+                # 检查传统中文格式
+                # 检查销售模式
+                for pattern in self.speaker_patterns['sales']:
                     if re.search(pattern, dialogue):
-                        speaker = 'customer'
+                        speaker = 'sales'
                         if '年' in dialogue and '月' in dialogue and '日' in dialogue:
-                            # 这是时间戳行，内容在下一行
-                            timestamp_speaker = 'customer'
-                            if i + 1 < len(dialogues):
-                                content = dialogues[i + 1]
-                                original = f"{dialogue}\n{content}"
-                                i += 1  # 跳过下一行，因为已经处理了
-                            else:
-                                content = ""
+                            # 这是时间戳行，可能内容在同一行
+                            content = re.sub(pattern, '', dialogue).strip()
                         else:
+                            # 移除说话人标识
                             content = re.sub(pattern, '', dialogue).strip()
                         break
-            
-            # 如果仍然未识别，根据内容特征推断
-            if speaker == 'unknown':
-                speaker = self._infer_speaker_by_content(content)
+                
+                # 检查客户模式
+                if speaker == 'unknown':
+                    for pattern in self.speaker_patterns['customer']:
+                        if re.search(pattern, dialogue):
+                            speaker = 'customer'
+                            if '年' in dialogue and '月' in dialogue and '日' in dialogue:
+                                content = re.sub(pattern, '', dialogue).strip()
+                            else:
+                                content = re.sub(pattern, '', dialogue).strip()
+                            break
+                
+                # 如果仍然未识别，根据内容特征推断
+                if speaker == 'unknown':
+                    speaker = self._infer_speaker_by_content(content)
             
             # 只添加有实际内容的对话
-            if content.strip() and len(content.strip()) > 3:
+            if content.strip() and len(content.strip()) > 1:
                 speaker_dialogues.append({
                     'speaker': speaker,
                     'content': content,
-                    'original': original
+                    'original': original,
+                    'extracted_timestamp': timestamp_str  # A/B格式提取的时间戳
                 })
-            
-            i += 1
         
         return speaker_dialogues
     
@@ -215,17 +228,23 @@ class TextProcessor:
         sales_keywords = [
             '我们', '我是', '益盟', '操盘手', '专员', '老师', '帮您', '为您',
             '给您', '分析', '指标', '软件', '功能', '腾讯', '上市公司',
-            'BS点', '买卖点', '主力资金', '步步高'
+            'BS点', '买卖点', '主力资金', '步步高', '这边', '公司', '平台',
+            '特地', '免费', '讲解', '演示', '客户', '用户'
         ]
         
         # 客户特征词
         customer_keywords = [
-            '我', '你', '这个', '怎么', '先', '多少钱', '收费', '效果', '真的',
-            '可以', '不需要', '没空', '回头', '好的', '没时间', '不感兴趣'
+            '喂', '嗯', '好', '可以', '行', '知道', '明白', '没有', '有',
+            '多少钱', '收费', '效果', '真的', '不需要', '没空', '回头', 
+            '没时间', '不感兴趣', '等会', '忙', '先生', '打开了'
         ]
         
         sales_score = sum(1 for kw in sales_keywords if kw in content)
         customer_score = sum(1 for kw in customer_keywords if kw in content)
+        
+        # 短回应更可能是客户
+        if len(content.strip()) <= 3 and content.strip() in ['嗯', '喂', '好', '行', '可以', '有', '没有']:
+            return 'customer'
         
         if sales_score > customer_score:
             return 'sales'
@@ -237,17 +256,30 @@ class TextProcessor:
     def _process_timestamps(self, dialogues: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """处理时间戳"""
         for i, dialogue in enumerate(dialogues):
-            # 提取时间戳
-            timestamp_match = re.search(self.timestamp_pattern, dialogue['original'])
-            if timestamp_match:
-                dialogue['timestamp'] = timestamp_match.group()
-                # 移除时间戳
-                dialogue['content'] = re.sub(self.timestamp_pattern, '', dialogue['content']).strip()
-            else:
-                dialogue['timestamp'] = None
+            timestamp = None
             
-            # 设置序号
+            # 优先使用A/B格式提取的时间戳
+            if dialogue.get('extracted_timestamp'):
+                timestamp = dialogue['extracted_timestamp']
+            else:
+                # 尝试从原始文本中提取时间戳
+                for pattern in self.timestamp_patterns:
+                    timestamp_match = re.search(pattern, dialogue['original'])
+                    if timestamp_match:
+                        if pattern.startswith(r'\['):
+                            # [H:M:S]格式，提取括号内的时间
+                            timestamp = timestamp_match.group(1)
+                        else:
+                            # 传统HH:MM:SS格式
+                            timestamp = timestamp_match.group()
+                        break
+            
+            dialogue['timestamp'] = timestamp
             dialogue['sequence'] = i
+            
+            # 清理extracted_timestamp字段
+            if 'extracted_timestamp' in dialogue:
+                del dialogue['extracted_timestamp']
         
         return dialogues
     
@@ -255,12 +287,13 @@ class TextProcessor:
         """内容分析"""
         sales_dialogues = [d for d in dialogues if d['speaker'] == 'sales']
         customer_dialogues = [d for d in dialogues if d['speaker'] == 'customer']
+        unknown_dialogues = [d for d in dialogues if d['speaker'] == 'unknown']
         
         analysis = {
             'total_dialogues': len(dialogues),
             'sales_dialogues': len(sales_dialogues),
             'customer_dialogues': len(customer_dialogues),
-            'unknown_dialogues': len(dialogues) - len(sales_dialogues) - len(customer_dialogues),
+            'unknown_dialogues': len(unknown_dialogues),
             
             'sales_content': [d['content'] for d in sales_dialogues],
             'customer_content': [d['content'] for d in customer_dialogues],
@@ -268,6 +301,8 @@ class TextProcessor:
             'conversation_pattern': self._analyze_conversation_pattern(dialogues),
             'topic_transitions': self._analyze_topic_transitions(dialogues)
         }
+        
+        logger.info(f"内容分析: 总对话{analysis['total_dialogues']}, 销售{analysis['sales_dialogues']}, 客户{analysis['customer_dialogues']}, 未知{analysis['unknown_dialogues']}")
         
         return analysis
     
@@ -282,12 +317,12 @@ class TextProcessor:
         """分析话题转换"""
         # 简化版话题识别
         topic_keywords = {
-            'introduction': ['我是', '身份', '公司', '腾讯'],
-            'product': ['软件', '功能', '指标', '操盘手'],
-            'demonstration': ['BS点', '买卖点', '步步高', '演示'],
+            'introduction': ['我是', '身份', '公司', '腾讯', '益盟', '操盘手'],
+            'product': ['软件', '功能', '指标', '操盘手', '分析'],
+            'demonstration': ['BS点', '买卖点', '步步高', '演示', '看一下', '点开'],
             'pricing': ['价格', '收费', '多少钱', '免费'],
-            'objection': ['不需要', '没空', '不感兴趣', '考虑'],
-            'closing': ['成交', '购买', '试用', '联系方式']
+            'objection': ['不需要', '没空', '不感兴趣', '考虑', '忙'],
+            'closing': ['成交', '购买', '试用', '联系方式', '微信']
         }
         
         topics = []
@@ -368,19 +403,45 @@ class TextProcessor:
         customer_chars = sum(len(d['content']) for d in customer_dialogues)
         total_chars = sales_chars + customer_chars
         
-        # 时间统计
+        # 时间统计 - 支持[H:M:S]格式
         timestamps = [d.get('timestamp') for d in dialogues if d.get('timestamp')]
         duration_minutes = 0
+        
         if len(timestamps) >= 2:
             try:
-                start_time = datetime.strptime(timestamps[0], '%H:%M:%S')
-                end_time = datetime.strptime(timestamps[-1], '%H:%M:%S')
-                duration = end_time - start_time
-                if duration.total_seconds() < 0:  # 跨天处理
-                    duration += timedelta(days=1)
-                duration_minutes = duration.total_seconds() / 60
-            except:
-                duration_minutes = 0
+                # 解析开始和结束时间戳
+                start_time_str = timestamps[0]
+                end_time_str = timestamps[-1]
+                
+                # 解析时间戳 - 支持H:M:S格式（小时可能超过24）
+                def parse_timestamp(ts_str):
+                    parts = ts_str.split(':')
+                    if len(parts) == 3:
+                        hours = int(parts[0])
+                        minutes = int(parts[1]) 
+                        seconds = int(parts[2])
+                        return hours * 3600 + minutes * 60 + seconds
+                    return 0
+                
+                start_seconds = parse_timestamp(start_time_str)
+                end_seconds = parse_timestamp(end_time_str)
+                
+                duration_seconds = end_seconds - start_seconds
+                if duration_seconds > 0:
+                    duration_minutes = duration_seconds / 60
+                else:
+                    # 如果计算出负数，可能是跨天或其他问题，使用对话数量估算
+                    duration_minutes = len(dialogues) * 0.5  # 每个对话平均30秒
+                    
+            except Exception as e:
+                logger.warning(f"时间戳解析失败，使用估算: {e}")
+                # 如果时间戳解析失败，基于对话数量估算
+                duration_minutes = len(dialogues) * 0.5  # 每个对话平均30秒
+        else:
+            # 没有时间戳，基于对话数量估算
+            duration_minutes = len(dialogues) * 0.5  # 每个对话平均30秒
+        
+        logger.info(f"时长计算: 共{len(timestamps)}个时间戳, 估算时长{duration_minutes:.1f}分钟")
         
         return {
             'total_dialogues': len(dialogues),

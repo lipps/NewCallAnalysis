@@ -1,6 +1,6 @@
 """FastAPI主应用"""
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from typing import List, Dict, Any, Optional
@@ -155,22 +155,107 @@ async def analyze_call(
     workflow: CallAnalysisWorkflow = Depends(get_workflow)
 ) -> CallAnalysisResult:
     """分析单个通话"""
-    
+
     try:
         logger.info(f"开始分析通话: {call_input.call_id}")
-        
+
         if not call_input.transcript.strip():
             raise HTTPException(status_code=400, detail="通话转写文本不能为空")
-        
+
         # 执行分析
         result = await workflow.execute(call_input, config)
-        
+
         logger.info(f"通话分析完成: {call_input.call_id}")
         return result
-        
+
     except Exception as e:
         logger.error(f"分析通话失败: {e}")
         raise HTTPException(status_code=500, detail=f"分析失败: {str(e)}")
+
+
+@app.post("/ui/analyze")
+async def analyze_call_for_ui(
+    call_input: CallInput = Body(...),
+    workflow: CallAnalysisWorkflow = Depends(get_workflow)
+) -> Dict[str, Any]:
+    """UI专用分析接口
+
+    返回适合UI界面展示的格式化分析结果，包含结构化证据和增强数据
+    """
+
+    try:
+        logger.info(f"开始UI分析通话: {call_input.call_id}")
+
+        if not call_input.transcript.strip():
+            raise HTTPException(status_code=400, detail="通话转写文本不能为空")
+
+        # 1. 执行现有分析（完全不变）
+        result = await workflow.execute(call_input, None)
+
+        # 2. 获取处理文本用于证据增强
+        processed_text = workflow.get_last_processed_text()
+
+        # 3. UI格式转换
+        from ..adapters.ui_adapter import UIAdapter
+        from ..adapters.evidence_enhancer import EvidenceEnhancer
+
+        # 初始化适配器（使用配置）
+        evidence_enhancer = EvidenceEnhancer(
+            max_quote_length=settings.ui.ui_evidence_max_length,
+            cache_size=settings.ui.ui_cache_size
+        )
+
+        ui_adapter = UIAdapter(
+            evidence_enhancer=evidence_enhancer,
+            enable_cache=settings.ui.ui_cache_enabled,
+            cache_size=settings.ui.ui_cache_size
+        )
+
+        # 4. 转换为UI格式
+        ui_result = ui_adapter.convert_to_ui_format(result, processed_text)
+
+        logger.info(f"UI通话分析完成: {call_input.call_id}")
+        return ui_result
+
+    except ImportError as e:
+        logger.error(f"UI适配器导入失败: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="UI适配器未正确安装，请检查系统配置"
+        )
+    except Exception as e:
+        logger.error(f"UI分析通话失败: {e}")
+        raise HTTPException(status_code=500, detail=f"UI分析失败: {str(e)}")
+
+
+@app.get("/ui/analyze/stats")
+async def get_ui_analysis_stats() -> Dict[str, Any]:
+    """获取UI分析统计信息"""
+
+    try:
+        from ..adapters.ui_adapter import UIAdapter
+        from ..adapters.evidence_enhancer import EvidenceEnhancer
+
+        # 创建临时实例获取统计信息
+        evidence_enhancer = EvidenceEnhancer()
+        ui_adapter = UIAdapter(evidence_enhancer=evidence_enhancer)
+
+        stats = ui_adapter.get_conversion_stats()
+
+        return {
+            "status": "ok",
+            "stats": stats,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except ImportError:
+        raise HTTPException(
+            status_code=503,
+            detail="UI适配器不可用"
+        )
+    except Exception as e:
+        logger.error(f"获取UI统计失败: {e}")
+        raise HTTPException(status_code=500, detail=f"获取统计失败: {str(e)}")
 
 
 @app.post("/analyze/batch")
