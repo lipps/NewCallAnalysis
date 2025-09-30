@@ -46,3 +46,11 @@ dist/
 .DS_Store
 Thumbs.db
 
+models/
+*.safetensors
+*.bin
+*.pt
+*.onnx
+*.ckpt
+*.h5
+*.pkl
